@@ -1,6 +1,11 @@
+import type { Metadata } from 'next';
+
 import { Badge, Section } from '@devagentshub/ui';
 
 import { ArticlesFeed } from '@/src/components/features/articles/articles-feed';
+import { guidesPageMetadata } from '@/src/lib/guides';
+
+export const metadata: Metadata = guidesPageMetadata;
 
 export default function GuidesPage() {
   return (
