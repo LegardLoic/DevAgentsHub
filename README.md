@@ -74,6 +74,11 @@ corepack pnpm dev
 - `feature/*`, `fix/*`, and `hotfix/*` are the scoped delivery branches
 - the full workflow is documented in [`docs/400-devops/git-workflow.md`](./docs/400-devops/git-workflow.md)
 
+## Contribution And Release Notes
+
+- contribution expectations are documented in [`CONTRIBUTING.md`](./CONTRIBUTING.md)
+- the release checklist is documented in [`docs/400-devops/release-process.md`](./docs/400-devops/release-process.md)
+
 ## Deployment
 
 The Render blueprint lives in [`infra/render/render.yaml`](./infra/render/render.yaml). Configure Render to use that file path when creating the blueprint environment.

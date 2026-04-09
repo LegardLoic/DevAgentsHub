@@ -1,0 +1,58 @@
+name: Feature request
+description: Propose a scoped improvement aligned with the MVP roadmap
+title: "[Feature] "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form for product or engineering improvements that fit the DevAgentsHub roadmap.
+  - type: input
+    id: problem
+    attributes:
+      label: Problem to solve
+      description: What concrete problem does this feature address?
+      placeholder: Community replies cannot be moderated or edited.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the smallest viable solution that would solve the problem.
+      placeholder: Add edit and delete actions for discussion replies owned by the current user.
+    validations:
+      required: true
+  - type: dropdown
+    id: pillar
+    attributes:
+      label: Product pillar
+      options:
+        - tools
+        - content
+        - learning
+        - community
+        - platform
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: Expected impact
+      description: Explain the user or operational benefit.
+      placeholder: Improves discussion quality and reduces admin overhead.
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Constraints or acceptance notes
+      description: Mention architecture, security, MVP scope, or rollout constraints if relevant.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Confirmation
+      options:
+        - label: This request is scoped and does not introduce an unrelated platform.
+          required: true
+        - label: I reviewed the existing MVP scope before proposing this change.
+          required: true
