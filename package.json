@@ -4,7 +4,7 @@
   "private": true,
   "packageManager": "pnpm@10.11.0",
   "engines": {
-    "node": ">=24.0.0"
+    "node": "24.x"
   },
   "scripts": {
     "dev": "turbo run dev --parallel",
@@ -14,11 +14,11 @@
     "test": "turbo run test",
     "db:up": "docker compose -f infra/docker/docker-compose.yml up -d",
     "db:down": "docker compose -f infra/docker/docker-compose.yml down",
-    "prisma:generate": "corepack pnpm --filter @devagentshub/api prisma:generate",
-    "db:migrate": "corepack pnpm --filter @devagentshub/api prisma:migrate",
-    "db:reset": "corepack pnpm --filter @devagentshub/api prisma:reset",
-    "db:seed": "corepack pnpm --filter @devagentshub/api prisma:seed",
-    "postinstall": "corepack pnpm prisma:generate"
+    "prisma:generate": "pnpm --filter @devagentshub/api prisma:generate",
+    "db:migrate": "pnpm --filter @devagentshub/api prisma:migrate",
+    "db:reset": "pnpm --filter @devagentshub/api prisma:reset",
+    "db:seed": "pnpm --filter @devagentshub/api prisma:seed",
+    "postinstall": "pnpm prisma:generate"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
