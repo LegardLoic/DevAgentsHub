@@ -1,0 +1,72 @@
+name: Bug report
+description: Report a reproducible defect in DevAgentsHub
+title: "[Bug] "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form for reproducible defects that affect local development, CI, Render deployment, or user-facing behavior.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: Describe the problem clearly and concretely.
+      placeholder: The API login route returns 500 after a valid credential submission.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: List the exact steps needed to reproduce the issue.
+      placeholder: |
+        1. Start the app with `corepack pnpm dev`
+        2. Open /login
+        3. Submit valid credentials
+        4. Observe the error
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      placeholder: The user should be authenticated and redirected to the home page.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      placeholder: The request fails with a 500 error and the API log shows a Prisma validation error.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - web
+        - api
+        - database
+        - ci-cd
+        - deployment
+        - docs
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Relevant logs or screenshots
+      description: Paste only the lines or screenshots that help identify the defect.
+      render: shell
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Confirmation
+      options:
+        - label: I reproduced this issue on the latest relevant branch.
+          required: true
+        - label: I included enough context to investigate the defect.
+          required: true
