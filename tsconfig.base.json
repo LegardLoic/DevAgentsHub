@@ -1,0 +1,51 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "allowJs": false,
+    "skipLibCheck": true,
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "baseUrl": ".",
+    "paths": {
+      "@devagentshub/config": [
+        "packages/config/src/index.ts"
+      ],
+      "@devagentshub/config/*": [
+        "packages/config/src/*"
+      ],
+      "@devagentshub/types": [
+        "packages/types/src/index.ts"
+      ],
+      "@devagentshub/types/*": [
+        "packages/types/src/*"
+      ],
+      "@devagentshub/ui": [
+        "packages/ui/src/index.ts"
+      ],
+      "@devagentshub/ui/*": [
+        "packages/ui/src/*"
+      ],
+      "@devagentshub/utils": [
+        "packages/utils/src/index.ts"
+      ],
+      "@devagentshub/utils/*": [
+        "packages/utils/src/*"
+      ],
+      "@devagentshub/validation": [
+        "packages/validation/src/index.ts"
+      ],
+      "@devagentshub/validation/*": [
+        "packages/validation/src/*"
+      ]
+    }
+  }
+}

@@ -1,0 +1,116 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-bg: #f5efe2;
+  --color-surface: #fffaf2;
+  --color-ink: #132238;
+  --color-subtle: #4d637d;
+  --color-border: #d7dfdf;
+  --color-muted: rgba(19, 34, 56, 0.06);
+  --color-accent: #0f766e;
+  --color-accent-strong: #115e59;
+  --color-accent-soft: rgba(15, 118, 110, 0.14);
+  --color-warm: #ea580c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(15, 118, 110, 0.18), transparent 28%),
+    radial-gradient(circle at top right, rgba(234, 88, 12, 0.16), transparent 24%),
+    var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-body), sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.headline {
+  font-family: var(--font-heading), sans-serif;
+  letter-spacing: -0.04em;
+}
+
+.hero-grid {
+  background-image:
+    linear-gradient(to right, rgba(19, 34, 56, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(19, 34, 56, 0.08) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.markdown-body {
+  color: var(--color-ink);
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3 {
+  margin-top: 1.75rem;
+  margin-bottom: 0.75rem;
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.markdown-body h1 {
+  font-size: 2rem;
+}
+
+.markdown-body h2 {
+  font-size: 1.5rem;
+}
+
+.markdown-body h3 {
+  font-size: 1.25rem;
+}
+
+.markdown-body p,
+.markdown-body li,
+.markdown-body ol,
+.markdown-body ul {
+  margin-bottom: 1rem;
+  line-height: 1.8;
+  color: var(--color-subtle);
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  padding-left: 1.25rem;
+}
+
+.markdown-body code {
+  border-radius: 0.5rem;
+  background: rgba(15, 23, 42, 0.08);
+  padding: 0.15rem 0.4rem;
+  font-size: 0.9em;
+}
+
+.markdown-body pre {
+  overflow-x: auto;
+  border-radius: 1rem;
+  background: #10253f;
+  padding: 1rem;
+  color: white;
+}
+
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-heading), sans-serif;
+  }
+}
+

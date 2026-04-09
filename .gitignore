@@ -1,0 +1,13 @@
+node_modules
+.turbo
+.next
+dist
+coverage
+*.log
+.codex-logs
+.env.local
+.env.*.local
+apps/api/prisma/dev.db
+apps/api/prisma/dev.db-journal
+apps/api/.env
+apps/web/.env
