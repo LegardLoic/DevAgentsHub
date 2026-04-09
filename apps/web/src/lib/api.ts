@@ -13,6 +13,9 @@ export class ApiClientError extends Error {
   }
 }
 
+export const getApiClientErrorMessage = (error: unknown, fallback: string): string =>
+  error instanceof ApiClientError ? error.message : fallback;
+
 const buildHeaders = (headers?: HeadersInit): HeadersInit => ({
   Accept: 'application/json',
   ...(headers ?? {}),
@@ -57,4 +60,3 @@ export const postJson = async <TResponse, TBody>(path: string, body: TBody): Pro
     },
     body: JSON.stringify(body),
   });
-

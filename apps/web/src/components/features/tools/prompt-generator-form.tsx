@@ -19,7 +19,7 @@ import {
 } from '@devagentshub/ui';
 import { promptGeneratorSchema, type PromptGeneratorInput } from '@devagentshub/validation';
 
-import { postJson } from '../../../lib/api';
+import { ApiClientError, postJson } from '../../../lib/api';
 import { StatusPanel } from '../../layout/status-panel';
 
 export const PromptGeneratorForm = () => {
@@ -59,18 +59,30 @@ export const PromptGeneratorForm = () => {
             <div className="space-y-2">
               <Label htmlFor="projectType">Project type</Label>
               <Input id="projectType" {...form.register('projectType')} />
+              {form.formState.errors.projectType ? (
+                <p className="text-sm text-[var(--color-warm)]">{form.formState.errors.projectType.message}</p>
+              ) : null}
             </div>
             <div className="space-y-2">
               <Label htmlFor="stack">Stack</Label>
               <Input id="stack" {...form.register('stack')} />
+              {form.formState.errors.stack ? (
+                <p className="text-sm text-[var(--color-warm)]">{form.formState.errors.stack.message}</p>
+              ) : null}
             </div>
             <div className="space-y-2">
               <Label htmlFor="goal">Goal</Label>
               <Textarea id="goal" {...form.register('goal')} />
+              {form.formState.errors.goal ? (
+                <p className="text-sm text-[var(--color-warm)]">{form.formState.errors.goal.message}</p>
+              ) : null}
             </div>
             <div className="space-y-2">
               <Label htmlFor="constraints">Constraints</Label>
               <Textarea id="constraints" {...form.register('constraints')} />
+              {form.formState.errors.constraints ? (
+                <p className="text-sm text-[var(--color-warm)]">{form.formState.errors.constraints.message}</p>
+              ) : null}
             </div>
             <div className="space-y-2">
               <Label htmlFor="detailLevel">Detail level</Label>
@@ -83,7 +95,15 @@ export const PromptGeneratorForm = () => {
                 <option value="balanced">Balanced</option>
                 <option value="detailed">Detailed</option>
               </select>
+              {form.formState.errors.detailLevel ? (
+                <p className="text-sm text-[var(--color-warm)]">{form.formState.errors.detailLevel.message}</p>
+              ) : null}
             </div>
+            {mutation.error instanceof ApiClientError ? (
+              <p className="rounded-2xl bg-[rgba(234,88,12,0.1)] px-4 py-3 text-sm text-[var(--color-warm)]">
+                {mutation.error.message}
+              </p>
+            ) : null}
             <Button className="w-full" disabled={mutation.isPending} type="submit">
               {mutation.isPending ? 'Generating...' : 'Generate prompt'}
             </Button>
@@ -99,6 +119,9 @@ export const PromptGeneratorForm = () => {
             <CardDescription>{output.summary}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-5">
+            <p className="rounded-2xl bg-[rgba(15,118,110,0.08)] px-4 py-3 text-sm text-[var(--color-accent-strong)]">
+              Prompt generated successfully.
+            </p>
             <div className="space-y-3">
               {output.sections.map((section) => (
                 <div key={section.label} className="rounded-2xl bg-[var(--color-surface)] p-4">

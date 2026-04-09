@@ -18,7 +18,7 @@ import {
 } from '@devagentshub/ui';
 import { debugHelperSchema, type DebugHelperInput } from '@devagentshub/validation';
 
-import { postJson } from '../../../lib/api';
+import { ApiClientError, postJson } from '../../../lib/api';
 import { StatusPanel } from '../../layout/status-panel';
 
 const DebugList = ({ items, title }: { items: string[]; title: string }) => (
@@ -71,15 +71,31 @@ export const DebugHelperForm = () => {
             <div className="space-y-2">
               <Label htmlFor="errorMessage">Error message</Label>
               <Textarea id="errorMessage" {...form.register('errorMessage')} />
+              {form.formState.errors.errorMessage ? (
+                <p className="text-sm text-[var(--color-warm)]">{form.formState.errors.errorMessage.message}</p>
+              ) : null}
             </div>
             <div className="space-y-2">
               <Label htmlFor="codeSnippet">Code snippet</Label>
               <Textarea id="codeSnippet" {...form.register('codeSnippet')} />
+              {form.formState.errors.codeSnippet ? (
+                <p className="text-sm text-[var(--color-warm)]">{form.formState.errors.codeSnippet.message}</p>
+              ) : null}
             </div>
             <div className="space-y-2">
               <Label htmlFor="technicalContext">Technical context</Label>
               <Textarea id="technicalContext" {...form.register('technicalContext')} />
+              {form.formState.errors.technicalContext ? (
+                <p className="text-sm text-[var(--color-warm)]">
+                  {form.formState.errors.technicalContext.message}
+                </p>
+              ) : null}
             </div>
+            {mutation.error instanceof ApiClientError ? (
+              <p className="rounded-2xl bg-[rgba(234,88,12,0.1)] px-4 py-3 text-sm text-[var(--color-warm)]">
+                {mutation.error.message}
+              </p>
+            ) : null}
             <Button className="w-full" disabled={mutation.isPending} type="submit">
               {mutation.isPending ? 'Analyzing...' : 'Generate debug plan'}
             </Button>
@@ -95,6 +111,9 @@ export const DebugHelperForm = () => {
             <CardDescription>{output.summary}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            <p className="rounded-2xl bg-[rgba(15,118,110,0.08)] px-4 py-3 text-sm text-[var(--color-accent-strong)]">
+              Debug plan generated successfully.
+            </p>
             <DebugList items={output.possibleCauses} title="Possible causes" />
             <DebugList items={output.resolutionSteps} title="Resolution steps" />
             <DebugList items={output.debugChecklist} title="Debug checklist" />

@@ -15,13 +15,14 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  EmptyState,
   Label,
   Textarea,
 } from '@devagentshub/ui';
 import { discussionSchema } from '@devagentshub/validation';
 import { formatDate } from '@devagentshub/utils';
 
-import { apiFetch, postJson } from '../../../lib/api';
+import { ApiClientError, apiFetch, getApiClientErrorMessage, postJson } from '../../../lib/api';
 import { queryKeys } from '../../../lib/query-keys';
 import { useCurrentUser } from '../../../hooks/use-auth';
 import { StatusPanel } from '../../layout/status-panel';
@@ -60,12 +61,17 @@ export const CommunityBoard = () => {
           <StatusPanel description="Fetching discussion threads." title="Loading discussions" tone="loading" />
         ) : discussionsQuery.isError ? (
           <StatusPanel
-            description="The discussion list could not be loaded."
+            description={getApiClientErrorMessage(discussionsQuery.error, 'The discussion list could not be loaded.')}
             title="Unable to load discussions"
             tone="error"
           />
+        ) : !discussionsQuery.data?.length ? (
+          <EmptyState
+            description="No discussion has been published yet. Start the first thread once authenticated."
+            title="No discussions yet"
+          />
         ) : (
-          discussionsQuery.data?.map((discussion) => (
+          discussionsQuery.data.map((discussion) => (
             <Card key={discussion.id}>
               <CardHeader>
                 <div className="flex items-center justify-between gap-3">
@@ -103,11 +109,22 @@ export const CommunityBoard = () => {
               <div className="space-y-2">
                 <Label htmlFor="title">Title</Label>
                 <Textarea id="title" className="min-h-[120px]" {...form.register('title')} />
+                {form.formState.errors.title ? (
+                  <p className="text-sm text-[var(--color-warm)]">{form.formState.errors.title.message}</p>
+                ) : null}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="content">Content</Label>
                 <Textarea id="content" {...form.register('content')} />
+                {form.formState.errors.content ? (
+                  <p className="text-sm text-[var(--color-warm)]">{form.formState.errors.content.message}</p>
+                ) : null}
               </div>
+              {createMutation.error instanceof ApiClientError ? (
+                <p className="rounded-2xl bg-[rgba(234,88,12,0.1)] px-4 py-3 text-sm text-[var(--color-warm)]">
+                  {createMutation.error.message}
+                </p>
+              ) : null}
               <Button className="w-full" disabled={createMutation.isPending} type="submit">
                 {createMutation.isPending ? 'Publishing...' : 'Publish discussion'}
               </Button>

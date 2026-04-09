@@ -18,7 +18,7 @@ import {
 } from '@devagentshub/ui';
 import { projectStructureSchema, type ProjectStructureInput } from '@devagentshub/validation';
 
-import { postJson } from '../../../lib/api';
+import { ApiClientError, postJson } from '../../../lib/api';
 import { StatusPanel } from '../../layout/status-panel';
 import { ProjectTreePreview } from './project-tree-preview';
 
@@ -57,6 +57,9 @@ export const ProjectStructureForm = () => {
             <div className="space-y-2">
               <Label htmlFor="projectName">Project name</Label>
               <Input id="projectName" {...form.register('projectName')} />
+              {form.formState.errors.projectName ? (
+                <p className="text-sm text-[var(--color-warm)]">{form.formState.errors.projectName.message}</p>
+              ) : null}
             </div>
             <div className="space-y-2">
               <Label htmlFor="template">Template</Label>
@@ -70,6 +73,9 @@ export const ProjectStructureForm = () => {
                 <option value="fullstack-monorepo">Fullstack monorepo</option>
                 <option value="game-dev-docs">Game dev docs</option>
               </select>
+              {form.formState.errors.template ? (
+                <p className="text-sm text-[var(--color-warm)]">{form.formState.errors.template.message}</p>
+              ) : null}
             </div>
             <label className="flex items-center justify-between rounded-2xl border border-[var(--color-border)] px-4 py-3">
               <span className="text-sm font-medium text-[var(--color-ink)]">Include testing</span>
@@ -79,6 +85,11 @@ export const ProjectStructureForm = () => {
               <span className="text-sm font-medium text-[var(--color-ink)]">Include Docker</span>
               <input type="checkbox" {...form.register('includeDocker')} />
             </label>
+            {mutation.error instanceof ApiClientError ? (
+              <p className="rounded-2xl bg-[rgba(234,88,12,0.1)] px-4 py-3 text-sm text-[var(--color-warm)]">
+                {mutation.error.message}
+              </p>
+            ) : null}
             <Button className="w-full" disabled={mutation.isPending} type="submit">
               {mutation.isPending ? 'Generating...' : 'Generate structure'}
             </Button>
@@ -94,6 +105,9 @@ export const ProjectStructureForm = () => {
             <CardDescription>{output.description}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
+            <p className="rounded-2xl bg-[rgba(15,118,110,0.08)] px-4 py-3 text-sm text-[var(--color-accent-strong)]">
+              Structure generated successfully.
+            </p>
             <ProjectTreePreview tree={output.tree} />
             <div className="rounded-3xl bg-[var(--color-surface)] p-5">
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-subtle)]">
