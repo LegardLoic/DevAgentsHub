@@ -8,6 +8,7 @@ services:
   - type: web
     name: devagentshub-api
     env: node
+    repo: https://github.com/LegardLoic/DevAgentsHub
     branch: main
     plan: starter
     autoDeployTrigger: checksPass
@@ -39,6 +40,7 @@ services:
   - type: web
     name: devagentshub-web
     env: node
+    repo: https://github.com/LegardLoic/DevAgentsHub
     branch: main
     plan: starter
     autoDeployTrigger: checksPass
