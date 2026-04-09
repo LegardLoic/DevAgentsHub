@@ -15,6 +15,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  EmptyState,
   Label,
   Section,
   Textarea,
@@ -22,7 +23,7 @@ import {
 import { discussionReplySchema } from '@devagentshub/validation';
 import { formatDate } from '@devagentshub/utils';
 
-import { apiFetch, postJson } from '../../../lib/api';
+import { ApiClientError, apiFetch, getApiClientErrorMessage, postJson } from '../../../lib/api';
 import { queryKeys } from '../../../lib/query-keys';
 import { useCurrentUser } from '../../../hooks/use-auth';
 import { StatusPanel } from '../../layout/status-panel';
@@ -65,7 +66,11 @@ export const DiscussionThread = ({ slug }: { slug: string }) => {
   if (discussionQuery.isError || !discussionQuery.data) {
     return (
       <Section>
-        <StatusPanel description="The thread could not be loaded." title="Thread unavailable" tone="error" />
+        <StatusPanel
+          description={getApiClientErrorMessage(discussionQuery.error, 'The thread could not be loaded.')}
+          title="Thread unavailable"
+          tone="error"
+        />
       </Section>
     );
   }
@@ -86,21 +91,31 @@ export const DiscussionThread = ({ slug }: { slug: string }) => {
           </div>
           <CardTitle>{discussionQuery.data.title}</CardTitle>
           <CardDescription>{discussionQuery.data.content}</CardDescription>
+          <p className="text-sm text-[var(--color-subtle)]">
+            Started by {discussionQuery.data.author.profile?.displayName ?? discussionQuery.data.author.email}
+          </p>
         </CardHeader>
         <CardContent className="space-y-4">
-          {discussionQuery.data.replies.map((reply) => (
-            <div key={reply.id} className="rounded-3xl border border-[var(--color-border)] bg-white p-5">
-              <div className="flex items-center justify-between gap-3">
-                <p className="font-semibold text-[var(--color-ink)]">
-                  {reply.author.profile?.displayName ?? reply.author.email}
-                </p>
-                <span className="text-xs uppercase tracking-[0.16em] text-[var(--color-subtle)]">
-                  {formatDate(reply.createdAt)}
-                </span>
+          {discussionQuery.data.replies.length ? (
+            discussionQuery.data.replies.map((reply) => (
+              <div key={reply.id} className="rounded-3xl border border-[var(--color-border)] bg-white p-5">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="font-semibold text-[var(--color-ink)]">
+                    {reply.author.profile?.displayName ?? reply.author.email}
+                  </p>
+                  <span className="text-xs uppercase tracking-[0.16em] text-[var(--color-subtle)]">
+                    {formatDate(reply.createdAt)}
+                  </span>
+                </div>
+                <p className="mt-3 text-sm leading-7 text-[var(--color-subtle)]">{reply.content}</p>
               </div>
-              <p className="mt-3 text-sm leading-7 text-[var(--color-subtle)]">{reply.content}</p>
-            </div>
-          ))}
+            ))
+          ) : (
+            <EmptyState
+              description="This thread does not have any replies yet."
+              title="No replies posted"
+            />
+          )}
         </CardContent>
       </Card>
 
@@ -117,7 +132,20 @@ export const DiscussionThread = ({ slug }: { slug: string }) => {
               <div className="space-y-2">
                 <Label htmlFor="content">Reply</Label>
                 <Textarea id="content" {...form.register('content')} />
+                {form.formState.errors.content ? (
+                  <p className="text-sm text-[var(--color-warm)]">{form.formState.errors.content.message}</p>
+                ) : null}
               </div>
+              {replyMutation.error instanceof ApiClientError ? (
+                <p className="rounded-2xl bg-[rgba(234,88,12,0.1)] px-4 py-3 text-sm text-[var(--color-warm)]">
+                  {replyMutation.error.message}
+                </p>
+              ) : null}
+              {replyMutation.status === 'success' ? (
+                <p className="rounded-2xl bg-[rgba(15,118,110,0.08)] px-4 py-3 text-sm text-[var(--color-accent-strong)]">
+                  Reply posted. The thread has been refreshed.
+                </p>
+              ) : null}
               <Button disabled={replyMutation.isPending} type="submit">
                 {replyMutation.isPending ? 'Posting...' : 'Post reply'}
               </Button>
