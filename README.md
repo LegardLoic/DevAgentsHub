@@ -69,9 +69,10 @@ corepack pnpm dev
 
 ## Git Workflow
 
-- `main` for production
-- `develop` for integration
-- `feature/*`, `fix/*`, and `hotfix/*` for scoped work
+- `main` is protected and reserved for production releases
+- `develop` is the integration branch for ongoing work
+- `feature/*`, `fix/*`, and `hotfix/*` are the scoped delivery branches
+- the full workflow is documented in [`docs/400-devops/git-workflow.md`](./docs/400-devops/git-workflow.md)
 
 ## Deployment
 
