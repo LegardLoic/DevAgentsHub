@@ -76,3 +76,11 @@ corepack pnpm dev
 ## Deployment
 
 The Render blueprint lives in [`infra/render/render.yaml`](./infra/render/render.yaml). Configure Render to use that file path when creating the blueprint environment.
+
+For production deployments from GitHub:
+
+- connect the repo to Render with the Blueprint path `infra/render/render.yaml`
+- keep the Render services pinned to the `main` branch
+- use Render auto-deploy mode `checksPass` so deployments start only after GitHub Actions succeeds on `main`
+- set the required Render environment variables manually: `JWT_SECRET`, `CORS_ORIGIN`, and `NEXT_PUBLIC_API_URL`
+- protect the `main` branch in GitHub with the required status check `verify`

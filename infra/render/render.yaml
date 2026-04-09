@@ -8,10 +8,13 @@ services:
   - type: web
     name: devagentshub-api
     env: node
+    branch: main
     plan: starter
-    autoDeploy: true
+    autoDeployTrigger: checksPass
     buildCommand: corepack enable && corepack pnpm install --frozen-lockfile && corepack pnpm --filter @devagentshub/api prisma:generate && corepack pnpm --filter @devagentshub/api build
+    preDeployCommand: corepack pnpm --filter @devagentshub/api prisma:migrate:deploy
     startCommand: corepack pnpm --filter @devagentshub/api start
+    healthCheckPath: /health
     buildFilter:
       paths:
         - apps/api/**
@@ -36,8 +39,9 @@ services:
   - type: web
     name: devagentshub-web
     env: node
+    branch: main
     plan: starter
-    autoDeploy: true
+    autoDeployTrigger: checksPass
     buildCommand: corepack enable && corepack pnpm install --frozen-lockfile && corepack pnpm --filter @devagentshub/web build
     startCommand: corepack pnpm --filter @devagentshub/web start
     buildFilter:
