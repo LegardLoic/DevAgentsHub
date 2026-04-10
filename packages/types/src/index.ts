@@ -203,6 +203,33 @@ export interface UpdateTemplatePayload {
   input?: unknown;
 }
 
+export type BookmarkTargetType = 'article' | 'course';
+
+export interface BookmarkSummary {
+  id: string;
+  targetType: BookmarkTargetType;
+  targetId: string;
+  title: string;
+  slug: string;
+  description: string;
+  href: string;
+  createdAt: string;
+}
+
+export type CreateBookmarkPayload =
+  | {
+      targetType: 'article';
+      targetId: string;
+    }
+  | {
+      targetType: 'course';
+      targetId: string;
+    };
+
+export interface DeleteBookmarkResponse {
+  success: boolean;
+}
+
 export interface ArticlePreview {
   id: string;
   slug: string;
