@@ -3,6 +3,8 @@ export const queryKeys = {
   tools: ['tools'] as const,
   savedRuns: (userId: string) => ['me', 'tool-runs', userId] as const,
   savedRun: (userId: string, id: string) => ['me', 'tool-runs', userId, id] as const,
+  templates: (userId: string) => ['me', 'templates', userId] as const,
+  template: (userId: string, id: string) => ['me', 'templates', userId, id] as const,
   adminArticles: ['admin', 'articles'] as const,
   adminArticle: (id: string) => ['admin', 'articles', id] as const,
   adminCourses: ['admin', 'courses'] as const,

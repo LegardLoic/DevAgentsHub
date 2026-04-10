@@ -22,16 +22,13 @@ import { ApiClientError, apiFetch, getApiClientErrorMessage } from '../../../lib
 import { queryKeys } from '../../../lib/query-keys';
 import { useCurrentUser } from '../../../hooks/use-auth';
 import { buildSavedRunReuseHref, getSavedRunPrimaryCopyText, getToolPath } from '../../../lib/tool-runs';
+import { getSuggestedTemplateName } from '../../../lib/templates';
 import { StatusPanel } from '../../layout/status-panel';
 import { DashboardAuthRequired } from './dashboard-auth-required';
 import { CopyActionButton } from './copy-action-button';
 import { ProjectTreePreview } from '../tools/project-tree-preview';
-
-const JsonBlock = ({ value }: { value: unknown }) => (
-  <div className="rounded-3xl bg-[#10253f] p-5 text-sm leading-7 text-white">
-    <pre className="whitespace-pre-wrap break-words font-mono text-xs">{JSON.stringify(value, null, 2)}</pre>
-  </div>
-);
+import { JsonBlock, ToolInputSummary } from './tool-input-summary';
+import { SaveTemplateCard } from './save-template-card';
 
 const DetailList = ({ items, title }: { items: string[]; title: string }) => (
   <div className="rounded-3xl bg-[var(--color-surface)] p-5">
@@ -43,72 +40,6 @@ const DetailList = ({ items, title }: { items: string[]; title: string }) => (
     </ul>
   </div>
 );
-
-const InputSummary = ({ run }: { run: SavedToolRunDetailType }) => {
-  switch (run.toolSlug) {
-    case 'prompt-generator':
-      return (
-        <div className="space-y-4">
-          <div className="rounded-2xl bg-[var(--color-surface)] p-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-subtle)]">Project type</p>
-            <p className="mt-2 text-sm leading-7 text-[var(--color-ink)]">{run.input.projectType}</p>
-          </div>
-          <div className="rounded-2xl bg-[var(--color-surface)] p-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-subtle)]">Stack</p>
-            <p className="mt-2 text-sm leading-7 text-[var(--color-ink)]">{run.input.stack}</p>
-          </div>
-          <div className="rounded-2xl bg-[var(--color-surface)] p-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-subtle)]">Goal</p>
-            <p className="mt-2 text-sm leading-7 text-[var(--color-ink)]">{run.input.goal}</p>
-          </div>
-          <div className="rounded-2xl bg-[var(--color-surface)] p-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-subtle)]">Constraints</p>
-            <p className="mt-2 text-sm leading-7 text-[var(--color-ink)]">{run.input.constraints || 'No extra constraints'}</p>
-          </div>
-        </div>
-      );
-
-    case 'project-structure-generator':
-      return (
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="rounded-2xl bg-[var(--color-surface)] p-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-subtle)]">Project name</p>
-            <p className="mt-2 text-sm leading-7 text-[var(--color-ink)]">{run.input.projectName}</p>
-          </div>
-          <div className="rounded-2xl bg-[var(--color-surface)] p-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-subtle)]">Template</p>
-            <p className="mt-2 text-sm leading-7 text-[var(--color-ink)]">{run.input.template}</p>
-          </div>
-          <div className="rounded-2xl bg-[var(--color-surface)] p-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-subtle)]">Include testing</p>
-            <p className="mt-2 text-sm leading-7 text-[var(--color-ink)]">{run.input.includeTesting ? 'Yes' : 'No'}</p>
-          </div>
-          <div className="rounded-2xl bg-[var(--color-surface)] p-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-subtle)]">Include Docker</p>
-            <p className="mt-2 text-sm leading-7 text-[var(--color-ink)]">{run.input.includeDocker ? 'Yes' : 'No'}</p>
-          </div>
-        </div>
-      );
-
-    case 'debug-helper':
-      return (
-        <div className="space-y-4">
-          <div className="rounded-2xl bg-[var(--color-surface)] p-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-subtle)]">Error message</p>
-            <p className="mt-2 text-sm leading-7 text-[var(--color-ink)]">{run.input.errorMessage}</p>
-          </div>
-          <div className="rounded-2xl bg-[var(--color-surface)] p-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-subtle)]">Technical context</p>
-            <p className="mt-2 text-sm leading-7 text-[var(--color-ink)]">{run.input.technicalContext}</p>
-          </div>
-          <div className="rounded-2xl bg-[#10253f] p-5 text-white">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/70">Code snippet</p>
-            <pre className="mt-3 whitespace-pre-wrap break-words font-mono text-xs leading-6">{run.input.codeSnippet}</pre>
-          </div>
-        </div>
-      );
-  }
-};
 
 const OutputSummary = ({ run }: { run: SavedToolRunDetailType }) => {
   switch (run.toolSlug) {
@@ -273,10 +204,10 @@ export const SavedRunDetail = ({ id }: { id: string }) => {
           <Card>
             <CardHeader>
               <CardTitle>Original input</CardTitle>
-              <CardDescription>These are the parameters that produced the saved run.</CardDescription>
+            <CardDescription>These are the parameters that produced the saved run.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <InputSummary run={run} />
+              <ToolInputSummary source={run} />
               <JsonBlock value={run.input} />
             </CardContent>
           </Card>
@@ -317,6 +248,12 @@ export const SavedRunDetail = ({ id }: { id: string }) => {
               <CopyActionButton content={JSON.stringify(run.input, null, 2)} defaultLabel="Copy input JSON" />
             </CardContent>
           </Card>
+          <SaveTemplateCard
+            input={run.input}
+            suggestedName={getSuggestedTemplateName(run.toolSlug, run.input)}
+            toolSlug={run.toolSlug}
+            userId={userQuery.data.id}
+          />
 
           <Card>
             <CardHeader>

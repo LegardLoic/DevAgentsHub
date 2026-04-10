@@ -42,6 +42,57 @@ export const debugHelperSchema = z.object({
   technicalContext: z.string().trim().min(8, 'Context is required').max(1200),
 });
 
+export const toolSlugSchema = z.enum([
+  'prompt-generator',
+  'project-structure-generator',
+  'debug-helper',
+]);
+
+export const templateNameSchema = z
+  .string()
+  .trim()
+  .min(2, 'Template name must be at least 2 characters')
+  .max(120, 'Template name must be shorter than 120 characters');
+
+const templateInputSchemaMap = {
+  'prompt-generator': promptGeneratorSchema,
+  'project-structure-generator': projectStructureSchema,
+  'debug-helper': debugHelperSchema,
+} as const;
+
+export const createTemplateSchema = z.discriminatedUnion('toolSlug', [
+  z.object({
+    name: templateNameSchema,
+    toolSlug: z.literal('prompt-generator'),
+    input: promptGeneratorSchema,
+  }),
+  z.object({
+    name: templateNameSchema,
+    toolSlug: z.literal('project-structure-generator'),
+    input: projectStructureSchema,
+  }),
+  z.object({
+    name: templateNameSchema,
+    toolSlug: z.literal('debug-helper'),
+    input: debugHelperSchema,
+  }),
+]);
+
+export const updateTemplateSchema = z
+  .object({
+    name: templateNameSchema.optional(),
+    input: z.unknown().optional(),
+  })
+  .refine((value) => value.name !== undefined || value.input !== undefined, {
+    message: 'At least one field must be provided to update the template.',
+    path: ['name'],
+  });
+
+export const parseTemplateInput = (
+  toolSlug: keyof typeof templateInputSchemaMap,
+  input: unknown,
+) => templateInputSchemaMap[toolSlug].parse(input);
+
 export const discussionSchema = z.object({
   title: z.string().trim().min(5, 'Title must be at least 5 characters').max(140),
   content: z.string().trim().min(20, 'Content must be at least 20 characters').max(4000),
@@ -90,6 +141,8 @@ export type LoginInput = z.infer<typeof loginSchema>;
 export type PromptGeneratorInput = z.infer<typeof promptGeneratorSchema>;
 export type ProjectStructureInput = z.infer<typeof projectStructureSchema>;
 export type DebugHelperInput = z.infer<typeof debugHelperSchema>;
+export type CreateTemplateInput = z.infer<typeof createTemplateSchema>;
+export type UpdateTemplateInput = z.infer<typeof updateTemplateSchema>;
 export type DiscussionInput = z.infer<typeof discussionSchema>;
 export type DiscussionReplyInput = z.infer<typeof discussionReplySchema>;
 export type LessonProgressInput = z.infer<typeof lessonProgressSchema>;
