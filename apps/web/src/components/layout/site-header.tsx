@@ -38,6 +38,9 @@ export const SiteHeader = () => {
         <div className="flex items-center gap-3">
           {user ? (
             <>
+              <Button asChild className="hidden md:inline-flex" variant="ghost">
+                <Link href="/dashboard">Dashboard</Link>
+              </Button>
               <div className="hidden text-right md:block">
                 <p className="text-sm font-semibold text-[var(--color-ink)]">
                   {user.profile?.displayName ?? user.email}

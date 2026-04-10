@@ -193,7 +193,7 @@ repo/
 - `/dashboard`
 - `/dashboard/profile`
 - `/dashboard/progress`
-- `/dashboard/saved-prompts`
+- `/dashboard/saved-runs`
 
 ## Admin minimal
 - `/admin`

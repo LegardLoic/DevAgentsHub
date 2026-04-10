@@ -11,6 +11,7 @@ import { articleRoutes } from '../routes/article.routes';
 import { authRoutes } from '../routes/auth.routes';
 import { courseRoutes } from '../routes/course.routes';
 import { discussionRoutes } from '../routes/discussion.routes';
+import { meRoutes } from '../routes/me.routes';
 import { toolRoutes } from '../routes/tool.routes';
 
 export const createApp = () => {
@@ -42,6 +43,7 @@ export const createApp = () => {
 
   app.use('/api/auth', authRoutes);
   app.use('/api/tools', toolRoutes);
+  app.use('/api/me', meRoutes);
   app.use('/api/articles', articleRoutes);
   app.use('/api/courses', courseRoutes);
   app.use('/api/discussions', discussionRoutes);
@@ -51,4 +53,3 @@ export const createApp = () => {
 
   return app;
 };
-

@@ -2,7 +2,7 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 
 import type { AuthUser } from '@devagentshub/types';
@@ -54,8 +54,11 @@ interface AuthFormProps {
 
 export const AuthForm = ({ mode }: AuthFormProps) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const queryClient = useQueryClient();
   const copy = authCopy[mode];
+  const nextPath = searchParams.get('next');
+  const redirectPath = nextPath?.startsWith('/') ? nextPath : mode === 'login' ? '/community' : '/';
 
   const form = useForm<AuthFormValues>({
     defaultValues: {
@@ -70,7 +73,7 @@ export const AuthForm = ({ mode }: AuthFormProps) => {
       postJson<{ user: AuthUser }, AuthFormValues>(copy.endpoint, values),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: queryKeys.auth });
-      router.push(mode === 'login' ? '/community' : '/');
+      router.push(redirectPath);
       router.refresh();
     },
   });
@@ -133,7 +136,10 @@ export const AuthForm = ({ mode }: AuthFormProps) => {
           </Button>
           <p className="text-sm text-[var(--color-subtle)]">
             {copy.footerLabel}{' '}
-            <Link className="font-semibold text-[var(--color-accent)]" href={copy.footerHref}>
+            <Link
+              className="font-semibold text-[var(--color-accent)]"
+              href={redirectPath !== '/' ? `${copy.footerHref}?next=${encodeURIComponent(redirectPath)}` : copy.footerHref}
+            >
               {copy.footerAction}
             </Link>
           </p>
