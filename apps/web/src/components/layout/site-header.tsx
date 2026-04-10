@@ -38,6 +38,11 @@ export const SiteHeader = () => {
         <div className="flex items-center gap-3">
           {user ? (
             <>
+              {user.role === 'ADMIN' ? (
+                <Button asChild className="hidden md:inline-flex" variant="ghost">
+                  <Link href="/admin">Admin</Link>
+                </Button>
+              ) : null}
               <Button asChild className="hidden md:inline-flex" variant="ghost">
                 <Link href="/dashboard">Dashboard</Link>
               </Button>

@@ -60,3 +60,12 @@ export const postJson = async <TResponse, TBody>(path: string, body: TBody): Pro
     },
     body: JSON.stringify(body),
   });
+
+export const patchJson = async <TResponse, TBody>(path: string, body: TBody): Promise<TResponse> =>
+  apiFetch<TResponse>(path, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
