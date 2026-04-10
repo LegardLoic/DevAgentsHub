@@ -93,6 +93,21 @@ export const parseTemplateInput = (
   input: unknown,
 ) => templateInputSchemaMap[toolSlug].parse(input);
 
+export const createBookmarkSchema = z.discriminatedUnion('targetType', [
+  z
+    .object({
+      targetType: z.literal('article'),
+      targetId: z.string().trim().min(1, 'Article id is required'),
+    })
+    .strict(),
+  z
+    .object({
+      targetType: z.literal('course'),
+      targetId: z.string().trim().min(1, 'Course id is required'),
+    })
+    .strict(),
+]);
+
 export const discussionSchema = z.object({
   title: z.string().trim().min(5, 'Title must be at least 5 characters').max(140),
   content: z.string().trim().min(20, 'Content must be at least 20 characters').max(4000),
@@ -143,6 +158,7 @@ export type ProjectStructureInput = z.infer<typeof projectStructureSchema>;
 export type DebugHelperInput = z.infer<typeof debugHelperSchema>;
 export type CreateTemplateInput = z.infer<typeof createTemplateSchema>;
 export type UpdateTemplateInput = z.infer<typeof updateTemplateSchema>;
+export type CreateBookmarkInput = z.infer<typeof createBookmarkSchema>;
 export type DiscussionInput = z.infer<typeof discussionSchema>;
 export type DiscussionReplyInput = z.infer<typeof discussionReplySchema>;
 export type LessonProgressInput = z.infer<typeof lessonProgressSchema>;

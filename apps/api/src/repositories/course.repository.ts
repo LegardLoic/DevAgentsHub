@@ -110,6 +110,33 @@ export class CourseRepository {
     };
   }
 
+  async findPublishedById(id: string): Promise<CourseSummary | null> {
+    const course = await prisma.course.findFirst({
+      where: {
+        id,
+        isPublished: true,
+      },
+      include: {
+        _count: {
+          select: { lessons: true },
+        },
+      },
+    });
+
+    if (!course) {
+      return null;
+    }
+
+    return {
+      id: course.id,
+      slug: course.slug,
+      title: course.title,
+      description: course.description,
+      isPublished: course.isPublished,
+      lessonsCount: course._count.lessons,
+    };
+  }
+
   async findLessonBySlug(slug: string, userId?: string): Promise<LessonDetail | null> {
     const lesson = await prisma.lesson.findUnique({
       where: { slug },

@@ -81,6 +81,18 @@ export class ArticleRepository {
     return article ? serializeArticle(article) : null;
   }
 
+  async findPublishedById(id: string): Promise<ArticlePreview | null> {
+    const article = await prisma.article.findFirst({
+      where: {
+        id,
+        isPublished: true,
+      },
+      select: articleSelect,
+    });
+
+    return article ? serializeArticle(article) : null;
+  }
+
   async listAll(): Promise<AdminArticleSummary[]> {
     const articles = await prisma.article.findMany({
       select: adminArticleSelect,
