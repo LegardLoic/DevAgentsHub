@@ -13,7 +13,7 @@ interface DashboardAuthRequiredProps {
 }
 
 export const DashboardAuthRequired = ({
-  description = 'Login to access your dashboard and saved tool runs.',
+  description = 'Login to access your dashboard, saved runs, and reusable templates.',
   nextPath = '/dashboard',
   title = 'Authentication required',
 }: DashboardAuthRequiredProps) => (

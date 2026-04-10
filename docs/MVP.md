@@ -194,6 +194,8 @@ repo/
 - `/dashboard/profile`
 - `/dashboard/progress`
 - `/dashboard/saved-runs`
+- `/dashboard/templates`
+- `/dashboard/templates/[id]`
 
 ## Admin minimal
 - `/admin`
@@ -218,6 +220,14 @@ repo/
 - `POST /api/tools/debug-helper/run`
 - `GET /api/tools`
 - `GET /api/tools/:slug`
+
+## Dashboard utilisateur
+- `GET /api/me/tool-runs`
+- `GET /api/me/tool-runs/:id`
+- `GET /api/me/templates`
+- `GET /api/me/templates/:id`
+- `POST /api/me/templates`
+- `PATCH /api/me/templates/:id`
 
 ## Content
 - `GET /api/articles`

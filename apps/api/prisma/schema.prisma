@@ -25,6 +25,7 @@ model User {
   role             UserRole           @default(USER)
   profile          Profile?
   toolRuns         ToolRun[]
+  templates        Template[]
   lessonProgress   LessonProgress[]
   discussions      Discussion[]
   discussionReplies DiscussionReply[]
@@ -51,6 +52,7 @@ model Tool {
   category    ToolCategory
   isPublished Boolean      @default(false)
   runs        ToolRun[]
+  templates   Template[]
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 }
@@ -67,6 +69,21 @@ model ToolRun {
 
   @@index([toolId, createdAt])
   @@index([userId, createdAt])
+}
+
+model Template {
+  id        String   @id @default(cuid())
+  userId    String
+  toolSlug  String
+  name      String
+  inputJson Json
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tool      Tool     @relation(fields: [toolSlug], references: [slug], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, updatedAt])
+  @@index([toolSlug, updatedAt])
 }
 
 model Article {

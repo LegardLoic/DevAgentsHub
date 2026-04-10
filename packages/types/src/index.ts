@@ -164,6 +164,45 @@ export type SavedToolRunDetail =
   | SavedToolRunBase<'project-structure-generator', ProjectStructureInput, ProjectStructureOutput>
   | SavedToolRunBase<'debug-helper', DebugHelperInput, DebugHelperOutput>;
 
+export interface SavedTemplateSummary {
+  id: string;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+  toolSlug: ToolSlug;
+  tool: ToolSummary;
+  preview: string;
+}
+
+interface SavedTemplateBase<TSlug extends ToolSlug, TInput> extends SavedTemplateSummary {
+  toolSlug: TSlug;
+  tool: ToolSummary & {
+    slug: TSlug;
+  };
+  input: TInput;
+}
+
+export type SavedTemplateDetail =
+  | SavedTemplateBase<'prompt-generator', PromptGeneratorInput>
+  | SavedTemplateBase<'project-structure-generator', ProjectStructureInput>
+  | SavedTemplateBase<'debug-helper', DebugHelperInput>;
+
+type CreateTemplateBase<TSlug extends ToolSlug, TInput> = {
+  name: string;
+  toolSlug: TSlug;
+  input: TInput;
+};
+
+export type CreateTemplatePayload =
+  | CreateTemplateBase<'prompt-generator', PromptGeneratorInput>
+  | CreateTemplateBase<'project-structure-generator', ProjectStructureInput>
+  | CreateTemplateBase<'debug-helper', DebugHelperInput>;
+
+export interface UpdateTemplatePayload {
+  name?: string;
+  input?: unknown;
+}
+
 export interface ArticlePreview {
   id: string;
   slug: string;
