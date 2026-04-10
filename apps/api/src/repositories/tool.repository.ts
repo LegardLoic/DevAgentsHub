@@ -12,7 +12,7 @@ import { excerpt } from '@devagentshub/utils';
 
 import { prisma } from '../lib/prisma';
 
-const toolSelect = {
+export const toolSelect = {
   id: true,
   slug: true,
   name: true,
@@ -21,7 +21,7 @@ const toolSelect = {
   isPublished: true,
 } satisfies Prisma.ToolSelect;
 
-type ToolRecord = Prisma.ToolGetPayload<{
+export type ToolRecord = Prisma.ToolGetPayload<{
   select: typeof toolSelect;
 }>;
 

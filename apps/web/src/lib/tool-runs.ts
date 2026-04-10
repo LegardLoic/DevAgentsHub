@@ -1,8 +1,10 @@
 import type {
+  SavedTemplateDetail,
   DebugHelperInput,
   PromptGeneratorInput,
   ProjectStructureInput,
   SavedToolRunDetail,
+  ToolRunInputMap,
   ToolSlug,
 } from '@devagentshub/types';
 
@@ -88,36 +90,51 @@ export const getDebugHelperInitialValues = (searchParams: SearchParamsReader): D
 
 export const getToolPath = (slug: ToolSlug): string => `/tools/${slug}`;
 
-export const buildSavedRunReuseHref = (run: SavedToolRunDetail): string => {
+export const buildToolInputReuseHref = <TSlug extends ToolSlug>(
+  toolSlug: TSlug,
+  input: ToolRunInputMap[TSlug],
+): string => {
   const searchParams = new URLSearchParams();
 
-  switch (run.toolSlug) {
-    case 'prompt-generator':
-      searchParams.set('projectType', run.input.projectType);
-      searchParams.set('stack', run.input.stack);
-      searchParams.set('goal', run.input.goal);
-      if (run.input.constraints) {
-        searchParams.set('constraints', run.input.constraints);
+  switch (toolSlug) {
+    case 'prompt-generator': {
+      const promptInput = input as ToolRunInputMap['prompt-generator'];
+      searchParams.set('projectType', promptInput.projectType);
+      searchParams.set('stack', promptInput.stack);
+      searchParams.set('goal', promptInput.goal);
+      if (promptInput.constraints) {
+        searchParams.set('constraints', promptInput.constraints);
       }
-      searchParams.set('detailLevel', run.input.detailLevel);
+      searchParams.set('detailLevel', promptInput.detailLevel);
       break;
+    }
 
-    case 'project-structure-generator':
-      searchParams.set('projectName', run.input.projectName);
-      searchParams.set('template', run.input.template);
-      searchParams.set('includeTesting', String(run.input.includeTesting));
-      searchParams.set('includeDocker', String(run.input.includeDocker));
+    case 'project-structure-generator': {
+      const projectInput = input as ToolRunInputMap['project-structure-generator'];
+      searchParams.set('projectName', projectInput.projectName);
+      searchParams.set('template', projectInput.template);
+      searchParams.set('includeTesting', String(projectInput.includeTesting));
+      searchParams.set('includeDocker', String(projectInput.includeDocker));
       break;
+    }
 
-    case 'debug-helper':
-      searchParams.set('errorMessage', run.input.errorMessage);
-      searchParams.set('codeSnippet', run.input.codeSnippet);
-      searchParams.set('technicalContext', run.input.technicalContext);
+    case 'debug-helper': {
+      const debugInput = input as ToolRunInputMap['debug-helper'];
+      searchParams.set('errorMessage', debugInput.errorMessage);
+      searchParams.set('codeSnippet', debugInput.codeSnippet);
+      searchParams.set('technicalContext', debugInput.technicalContext);
       break;
+    }
   }
 
-  return `${getToolPath(run.toolSlug)}?${searchParams.toString()}`;
+  return `${getToolPath(toolSlug)}?${searchParams.toString()}`;
 };
+
+export const buildSavedRunReuseHref = (run: SavedToolRunDetail): string =>
+  buildToolInputReuseHref(run.toolSlug, run.input);
+
+export const buildSavedTemplateReuseHref = (template: SavedTemplateDetail): string =>
+  buildToolInputReuseHref(template.toolSlug, template.input);
 
 export const getSavedRunPrimaryCopyText = (run: SavedToolRunDetail): string => {
   switch (run.toolSlug) {

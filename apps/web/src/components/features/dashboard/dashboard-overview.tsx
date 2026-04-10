@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowRight, History, LayoutDashboard, MessagesSquare, Sparkles } from 'lucide-react';
+import { ArrowRight, History, Layers3, LayoutDashboard, MessagesSquare, Sparkles } from 'lucide-react';
 
 import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Section } from '@devagentshub/ui';
 
@@ -36,7 +36,7 @@ export const DashboardOverview = () => {
   if (!userQuery.data) {
     return (
       <Section>
-        <DashboardAuthRequired description="Login to access your dashboard, review saved runs, and jump back into the tools quickly." />
+        <DashboardAuthRequired description="Login to access your dashboard, review saved runs, manage reusable templates, and jump back into the tools quickly." />
       </Section>
     );
   }
@@ -55,30 +55,56 @@ export const DashboardOverview = () => {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-        <Card className="bg-[linear-gradient(135deg,rgba(15,118,110,0.12),rgba(255,255,255,0.96))]">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <History className="h-5 w-5 text-[var(--color-accent)]" />
-              <Badge>Saved runs</Badge>
-            </div>
-            <CardTitle>Review your tool history</CardTitle>
-            <CardDescription>
-              Every authenticated tool execution is persisted. Reopen a result, copy it, or relaunch the tool with the
-              same input.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-wrap items-center gap-3">
-            <Button asChild>
-              <Link href="/dashboard/saved-runs">
-                Open saved runs
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-            <Button asChild variant="secondary">
-              <Link href="/tools">Run a new tool</Link>
-            </Button>
-          </CardContent>
-        </Card>
+        <div className="grid gap-6">
+          <Card className="bg-[linear-gradient(135deg,rgba(15,118,110,0.12),rgba(255,255,255,0.96))]">
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <History className="h-5 w-5 text-[var(--color-accent)]" />
+                <Badge>Saved runs</Badge>
+              </div>
+              <CardTitle>Review your tool history</CardTitle>
+              <CardDescription>
+                Every authenticated tool execution is persisted. Reopen a result, copy it, or relaunch the tool with the
+                same input.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-wrap items-center gap-3">
+              <Button asChild>
+                <Link href="/dashboard/saved-runs">
+                  Open saved runs
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+              <Button asChild variant="secondary">
+                <Link href="/tools">Run a new tool</Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <Layers3 className="h-5 w-5 text-[var(--color-accent)]" />
+                <Badge>Templates</Badge>
+              </div>
+              <CardTitle>Keep reusable inputs ready</CardTitle>
+              <CardDescription>
+                Save your best runs as reusable templates and relaunch the matching tool with one click.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-wrap items-center gap-3">
+              <Button asChild>
+                <Link href="/dashboard/templates">
+                  Open templates
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+              <Button asChild variant="secondary">
+                <Link href="/dashboard/saved-runs">Use saved runs as source</Link>
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
 
         <div className="grid gap-6">
           <Card>
