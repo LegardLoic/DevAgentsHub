@@ -1,4 +1,14 @@
-import type { CourseDetail, CourseSummary, LessonDetail, LessonProgressResponse } from '@devagentshub/types';
+import type {
+  AdminCourseDetail,
+  AdminCourseSummary,
+  AdminLessonDetail,
+  AdminLessonSummary,
+  CourseDetail,
+  CourseSummary,
+  LessonDetail,
+  LessonProgressResponse,
+} from '@devagentshub/types';
+import type { AdminCourseInput, AdminLessonInput } from '@devagentshub/validation';
 
 import { prisma } from '../lib/prisma';
 
@@ -177,6 +187,282 @@ export class CourseRepository {
       lessonId: progress.lessonId,
       completed: progress.completed,
       completedAt: progress.completedAt?.toISOString() ?? null,
+    };
+  }
+
+  async listAll(): Promise<AdminCourseSummary[]> {
+    const courses = await prisma.course.findMany({
+      include: {
+        _count: {
+          select: { lessons: true },
+        },
+      },
+      orderBy: { updatedAt: 'desc' },
+    });
+
+    return courses.map((course) => ({
+      id: course.id,
+      slug: course.slug,
+      title: course.title,
+      description: course.description,
+      isPublished: course.isPublished,
+      lessonsCount: course._count.lessons,
+      createdAt: course.createdAt.toISOString(),
+      updatedAt: course.updatedAt.toISOString(),
+    }));
+  }
+
+  async findById(id: string): Promise<AdminCourseDetail | null> {
+    const course = await prisma.course.findUnique({
+      where: { id },
+      include: {
+        lessons: {
+          orderBy: { order: 'asc' },
+        },
+      },
+    });
+
+    if (!course) {
+      return null;
+    }
+
+    return {
+      id: course.id,
+      slug: course.slug,
+      title: course.title,
+      description: course.description,
+      isPublished: course.isPublished,
+      lessonsCount: course.lessons.length,
+      createdAt: course.createdAt.toISOString(),
+      updatedAt: course.updatedAt.toISOString(),
+      lessons: course.lessons.map((lesson) => ({
+        id: lesson.id,
+        courseId: lesson.courseId,
+        slug: lesson.slug,
+        title: lesson.title,
+        excerpt: lesson.excerpt,
+        content: lesson.content,
+        order: lesson.order,
+        createdAt: lesson.createdAt.toISOString(),
+        updatedAt: lesson.updatedAt.toISOString(),
+        course: {
+          id: course.id,
+          slug: course.slug,
+          title: course.title,
+        },
+      })),
+    };
+  }
+
+  async findCourseBySlug(slug: string): Promise<AdminCourseSummary | null> {
+    const course = await prisma.course.findUnique({
+      where: { slug },
+      include: {
+        _count: {
+          select: { lessons: true },
+        },
+      },
+    });
+
+    if (!course) {
+      return null;
+    }
+
+    return {
+      id: course.id,
+      slug: course.slug,
+      title: course.title,
+      description: course.description,
+      isPublished: course.isPublished,
+      lessonsCount: course._count.lessons,
+      createdAt: course.createdAt.toISOString(),
+      updatedAt: course.updatedAt.toISOString(),
+    };
+  }
+
+  async createCourse(input: AdminCourseInput): Promise<AdminCourseDetail> {
+    const course = await prisma.course.create({
+      data: input,
+      include: {
+        lessons: {
+          orderBy: { order: 'asc' },
+        },
+      },
+    });
+
+    return {
+      id: course.id,
+      slug: course.slug,
+      title: course.title,
+      description: course.description,
+      isPublished: course.isPublished,
+      lessonsCount: course.lessons.length,
+      createdAt: course.createdAt.toISOString(),
+      updatedAt: course.updatedAt.toISOString(),
+      lessons: [],
+    };
+  }
+
+  async updateCourse(id: string, input: AdminCourseInput): Promise<AdminCourseDetail> {
+    const course = await prisma.course.update({
+      where: { id },
+      data: input,
+      include: {
+        lessons: {
+          orderBy: { order: 'asc' },
+        },
+      },
+    });
+
+    return {
+      id: course.id,
+      slug: course.slug,
+      title: course.title,
+      description: course.description,
+      isPublished: course.isPublished,
+      lessonsCount: course.lessons.length,
+      createdAt: course.createdAt.toISOString(),
+      updatedAt: course.updatedAt.toISOString(),
+      lessons: course.lessons.map((lesson) => ({
+        id: lesson.id,
+        courseId: lesson.courseId,
+        slug: lesson.slug,
+        title: lesson.title,
+        excerpt: lesson.excerpt,
+        content: lesson.content,
+        order: lesson.order,
+        createdAt: lesson.createdAt.toISOString(),
+        updatedAt: lesson.updatedAt.toISOString(),
+        course: {
+          id: course.id,
+          slug: course.slug,
+          title: course.title,
+        },
+      })),
+    };
+  }
+
+  async findLessonById(id: string): Promise<AdminLessonSummary | null> {
+    const lesson = await prisma.lesson.findUnique({
+      where: { id },
+    });
+
+    if (!lesson) {
+      return null;
+    }
+
+    return {
+      id: lesson.id,
+      courseId: lesson.courseId,
+      slug: lesson.slug,
+      title: lesson.title,
+      excerpt: lesson.excerpt,
+      order: lesson.order,
+      createdAt: lesson.createdAt.toISOString(),
+      updatedAt: lesson.updatedAt.toISOString(),
+    };
+  }
+
+  async findLessonBySlugForAdmin(slug: string): Promise<AdminLessonSummary | null> {
+    const lesson = await prisma.lesson.findUnique({
+      where: { slug },
+    });
+
+    if (!lesson) {
+      return null;
+    }
+
+    return {
+      id: lesson.id,
+      courseId: lesson.courseId,
+      slug: lesson.slug,
+      title: lesson.title,
+      excerpt: lesson.excerpt,
+      order: lesson.order,
+      createdAt: lesson.createdAt.toISOString(),
+      updatedAt: lesson.updatedAt.toISOString(),
+    };
+  }
+
+  async findLessonByCourseAndOrder(courseId: string, order: number): Promise<AdminLessonSummary | null> {
+    const lesson = await prisma.lesson.findUnique({
+      where: {
+        courseId_order: {
+          courseId,
+          order,
+        },
+      },
+    });
+
+    if (!lesson) {
+      return null;
+    }
+
+    return {
+      id: lesson.id,
+      courseId: lesson.courseId,
+      slug: lesson.slug,
+      title: lesson.title,
+      excerpt: lesson.excerpt,
+      order: lesson.order,
+      createdAt: lesson.createdAt.toISOString(),
+      updatedAt: lesson.updatedAt.toISOString(),
+    };
+  }
+
+  async createLesson(courseId: string, input: AdminLessonInput): Promise<AdminLessonDetail> {
+    const lesson = await prisma.lesson.create({
+      data: {
+        courseId,
+        ...input,
+      },
+      include: {
+        course: true,
+      },
+    });
+
+    return {
+      id: lesson.id,
+      courseId: lesson.courseId,
+      slug: lesson.slug,
+      title: lesson.title,
+      excerpt: lesson.excerpt,
+      content: lesson.content,
+      order: lesson.order,
+      createdAt: lesson.createdAt.toISOString(),
+      updatedAt: lesson.updatedAt.toISOString(),
+      course: {
+        id: lesson.course.id,
+        slug: lesson.course.slug,
+        title: lesson.course.title,
+      },
+    };
+  }
+
+  async updateLesson(id: string, input: AdminLessonInput): Promise<AdminLessonDetail> {
+    const lesson = await prisma.lesson.update({
+      where: { id },
+      data: input,
+      include: {
+        course: true,
+      },
+    });
+
+    return {
+      id: lesson.id,
+      courseId: lesson.courseId,
+      slug: lesson.slug,
+      title: lesson.title,
+      excerpt: lesson.excerpt,
+      content: lesson.content,
+      order: lesson.order,
+      createdAt: lesson.createdAt.toISOString(),
+      updatedAt: lesson.updatedAt.toISOString(),
+      course: {
+        id: lesson.course.id,
+        slug: lesson.course.slug,
+        title: lesson.course.title,
+      },
     };
   }
 }

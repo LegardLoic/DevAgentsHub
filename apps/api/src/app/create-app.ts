@@ -8,6 +8,7 @@ import { attachAuthUser } from '../middlewares/auth';
 import { errorHandler } from '../middlewares/error-handler';
 import { notFoundHandler } from '../middlewares/not-found';
 import { articleRoutes } from '../routes/article.routes';
+import { adminRoutes } from '../routes/admin.routes';
 import { authRoutes } from '../routes/auth.routes';
 import { courseRoutes } from '../routes/course.routes';
 import { discussionRoutes } from '../routes/discussion.routes';
@@ -44,6 +45,7 @@ export const createApp = () => {
   app.use('/api/auth', authRoutes);
   app.use('/api/tools', toolRoutes);
   app.use('/api/me', meRoutes);
+  app.use('/api/admin', adminRoutes);
   app.use('/api/articles', articleRoutes);
   app.use('/api/courses', courseRoutes);
   app.use('/api/discussions', discussionRoutes);
