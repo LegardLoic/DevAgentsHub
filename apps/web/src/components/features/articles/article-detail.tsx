@@ -19,6 +19,7 @@ import { formatDate } from '@devagentshub/utils';
 
 import { ApiClientError, apiFetch, getApiClientErrorMessage } from '../../../lib/api';
 import { queryKeys } from '../../../lib/query-keys';
+import { BookmarkAction } from '../bookmarks/bookmark-action';
 import { MarkdownView } from '../../layout/markdown-view';
 import { StatusPanel } from '../../layout/status-panel';
 import { GuideNextSteps } from './guide-next-steps';
@@ -146,6 +147,12 @@ export const ArticleDetail = ({ slug }: { slug: string }) => {
               </p>
               <p className="mt-2 text-[var(--color-ink)]">{formatDate(articleQuery.data.updatedAt)}</p>
             </div>
+            <BookmarkAction
+              loginNextPath={`/guides/${articleQuery.data.slug}`}
+              targetId={articleQuery.data.id}
+              targetTitle={articleQuery.data.title}
+              targetType="article"
+            />
           </CardContent>
         </Card>
       </div>

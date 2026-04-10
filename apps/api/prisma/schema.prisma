@@ -26,6 +26,7 @@ model User {
   profile          Profile?
   toolRuns         ToolRun[]
   templates        Template[]
+  bookmarks        Bookmark[]
   lessonProgress   LessonProgress[]
   discussions      Discussion[]
   discussionReplies DiscussionReply[]
@@ -93,6 +94,7 @@ model Article {
   excerpt     String
   content     String
   isPublished Boolean  @default(false)
+  bookmarks   Bookmark[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -104,8 +106,26 @@ model Course {
   description String
   isPublished Boolean  @default(false)
   lessons     Lesson[]
+  bookmarks   Bookmark[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model Bookmark {
+  id        String   @id @default(cuid())
+  userId    String
+  articleId String?
+  courseId  String?
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  article   Article? @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  course    Course?  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, articleId])
+  @@unique([userId, courseId])
+  @@index([userId, createdAt])
+  @@index([articleId])
+  @@index([courseId])
 }
 
 model Lesson {

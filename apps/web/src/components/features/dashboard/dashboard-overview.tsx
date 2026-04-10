@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowRight, History, Layers3, LayoutDashboard, MessagesSquare, Sparkles } from 'lucide-react';
+import { ArrowRight, Bookmark, History, Layers3, LayoutDashboard, MessagesSquare, Sparkles } from 'lucide-react';
 
 import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Section } from '@devagentshub/ui';
 
@@ -49,8 +49,8 @@ export const DashboardOverview = () => {
         <Badge>Dashboard</Badge>
         <h1 className="headline text-5xl font-bold">Welcome back, {displayName}</h1>
         <p className="max-w-2xl text-lg leading-8 text-[var(--color-subtle)]">
-          This dashboard stays intentionally lightweight: review saved tool runs, jump back into a tool, and keep your
-          next action close.
+          This dashboard stays intentionally lightweight: review saved tool runs, reuse templates, revisit bookmarks,
+          and keep your next action close.
         </p>
       </div>
 
@@ -101,6 +101,30 @@ export const DashboardOverview = () => {
               </Button>
               <Button asChild variant="secondary">
                 <Link href="/dashboard/saved-runs">Use saved runs as source</Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <Bookmark className="h-5 w-5 text-[var(--color-accent)]" />
+                <Badge>Bookmarks</Badge>
+              </div>
+              <CardTitle>Keep useful content close</CardTitle>
+              <CardDescription>
+                Save guides and courses intentionally, then revisit them from one dashboard page.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-wrap items-center gap-3">
+              <Button asChild>
+                <Link href="/dashboard/bookmarks">
+                  Open bookmarks
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+              <Button asChild variant="secondary">
+                <Link href="/guides">Browse guides</Link>
               </Button>
             </CardContent>
           </Card>

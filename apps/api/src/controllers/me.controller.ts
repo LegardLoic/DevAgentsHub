@@ -76,6 +76,42 @@ export class MeController {
       data: template,
     });
   });
+
+  listBookmarks = asyncHandler(async (req, res) => {
+    if (!req.authUser) {
+      throw new AppError('Authentication is required for this action.', 401, 'UNAUTHORIZED');
+    }
+
+    const bookmarks = await this.me.listBookmarks(req.authUser.id);
+
+    res.status(200).json({
+      data: bookmarks,
+    });
+  });
+
+  createBookmark = asyncHandler(async (req, res) => {
+    if (!req.authUser) {
+      throw new AppError('Authentication is required for this action.', 401, 'UNAUTHORIZED');
+    }
+
+    const bookmark = await this.me.createBookmark(req.authUser.id, req.body);
+
+    res.status(201).json({
+      data: bookmark,
+    });
+  });
+
+  deleteBookmark = asyncHandler(async (req, res) => {
+    if (!req.authUser) {
+      throw new AppError('Authentication is required for this action.', 401, 'UNAUTHORIZED');
+    }
+
+    const result = await this.me.deleteBookmark(req.authUser.id, req.params.id as string);
+
+    res.status(200).json({
+      data: result,
+    });
+  });
 }
 
 export const meController = new MeController();

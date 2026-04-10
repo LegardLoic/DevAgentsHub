@@ -69,3 +69,8 @@ export const patchJson = async <TResponse, TBody>(path: string, body: TBody): Pr
     },
     body: JSON.stringify(body),
   });
+
+export const deleteJson = async <TResponse>(path: string): Promise<TResponse> =>
+  apiFetch<TResponse>(path, {
+    method: 'DELETE',
+  });
