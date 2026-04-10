@@ -122,6 +122,12 @@ export interface ToolRunOutputMap {
   'debug-helper': DebugHelperOutput;
 }
 
+export interface ToolRunInputMap {
+  'prompt-generator': PromptGeneratorInput;
+  'project-structure-generator': ProjectStructureInput;
+  'debug-helper': DebugHelperInput;
+}
+
 export interface ToolRun<TInput = unknown, TOutput = unknown> {
   id: string;
   toolId: string;
@@ -135,6 +141,28 @@ export interface ToolRunResult<TOutput> {
   tool: ToolSummary;
   output: TOutput;
 }
+
+export interface SavedToolRunSummary {
+  id: string;
+  createdAt: string;
+  toolSlug: ToolSlug;
+  tool: ToolSummary;
+  preview: string;
+}
+
+interface SavedToolRunBase<TSlug extends ToolSlug, TInput, TOutput> extends SavedToolRunSummary {
+  toolSlug: TSlug;
+  tool: ToolSummary & {
+    slug: TSlug;
+  };
+  input: TInput;
+  output: TOutput;
+}
+
+export type SavedToolRunDetail =
+  | SavedToolRunBase<'prompt-generator', PromptGeneratorInput, PromptGeneratorOutput>
+  | SavedToolRunBase<'project-structure-generator', ProjectStructureInput, ProjectStructureOutput>
+  | SavedToolRunBase<'debug-helper', DebugHelperInput, DebugHelperOutput>;
 
 export interface ArticlePreview {
   id: string;
@@ -224,4 +252,3 @@ export interface CreateDiscussionPayload {
 export interface CreateDiscussionReplyPayload {
   content: string;
 }
-

@@ -1,6 +1,9 @@
+import { Suspense } from 'react';
+
 import { Badge, Section } from '@devagentshub/ui';
 
 import { PromptGeneratorForm } from '@/src/components/features/tools/prompt-generator-form';
+import { StatusPanel } from '@/src/components/layout/status-panel';
 
 export default function PromptGeneratorPage() {
   return (
@@ -12,7 +15,13 @@ export default function PromptGeneratorPage() {
           Capture project type, stack, goal, and constraints in a format that encourages durable implementation.
         </p>
       </div>
-      <PromptGeneratorForm />
+      <Suspense
+        fallback={
+          <StatusPanel description="Preparing the prompt generator form." title="Loading tool" tone="loading" />
+        }
+      >
+        <PromptGeneratorForm />
+      </Suspense>
     </Section>
   );
 }

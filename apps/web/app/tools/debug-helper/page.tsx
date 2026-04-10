@@ -1,6 +1,9 @@
+import { Suspense } from 'react';
+
 import { Badge, Section } from '@devagentshub/ui';
 
 import { DebugHelperForm } from '@/src/components/features/tools/debug-helper-form';
+import { StatusPanel } from '@/src/components/layout/status-panel';
 
 export default function DebugHelperPage() {
   return (
@@ -12,7 +15,13 @@ export default function DebugHelperPage() {
           Paste the failing context and get a concise structure for causes, fixes, and regression-proof checks.
         </p>
       </div>
-      <DebugHelperForm />
+      <Suspense
+        fallback={
+          <StatusPanel description="Preparing the debug helper form." title="Loading tool" tone="loading" />
+        }
+      >
+        <DebugHelperForm />
+      </Suspense>
     </Section>
   );
 }

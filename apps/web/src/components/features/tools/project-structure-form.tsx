@@ -2,6 +2,8 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
+import { useSearchParams } from 'next/navigation';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
 import type { ProjectStructureOutput, ToolRunResult } from '@devagentshub/types';
@@ -19,19 +21,24 @@ import {
 import { projectStructureSchema, type ProjectStructureInput } from '@devagentshub/validation';
 
 import { ApiClientError, postJson } from '../../../lib/api';
+import {
+  getProjectStructureInitialValues,
+  projectStructureDefaultValues,
+} from '../../../lib/tool-runs';
 import { StatusPanel } from '../../layout/status-panel';
 import { ProjectTreePreview } from './project-tree-preview';
 
 export const ProjectStructureForm = () => {
+  const searchParams = useSearchParams();
+  const searchParamsKey = searchParams.toString();
   const form = useForm<ProjectStructureInput>({
     resolver: zodResolver(projectStructureSchema),
-    defaultValues: {
-      projectName: 'DevAgentsHub',
-      template: 'fullstack-monorepo',
-      includeTesting: true,
-      includeDocker: true,
-    },
+    defaultValues: projectStructureDefaultValues,
   });
+
+  useEffect(() => {
+    form.reset(getProjectStructureInitialValues(new URLSearchParams(searchParamsKey)));
+  }, [form, searchParamsKey]);
 
   const mutation = useMutation({
     mutationFn: (values: ProjectStructureInput) =>
