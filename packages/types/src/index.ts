@@ -177,6 +177,28 @@ export interface ArticleDetail extends ArticlePreview {
   content: string;
 }
 
+export interface AdminArticlePayload {
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  isPublished: boolean;
+}
+
+export interface AdminArticleSummary {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  isPublished: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AdminArticleDetail extends AdminArticleSummary {
+  content: string;
+}
+
 export interface LessonSummary {
   id: string;
   slug: string;
@@ -198,6 +220,56 @@ export interface CourseSummary {
 
 export interface CourseDetail extends CourseSummary {
   lessons: LessonSummary[];
+}
+
+export interface AdminCoursePayload {
+  title: string;
+  slug: string;
+  description: string;
+  isPublished: boolean;
+}
+
+export interface AdminLessonPayload {
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  order: number;
+}
+
+export interface AdminLessonSummary {
+  id: string;
+  courseId: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  order: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AdminLessonDetail extends AdminLessonSummary {
+  content: string;
+  course: {
+    id: string;
+    slug: string;
+    title: string;
+  };
+}
+
+export interface AdminCourseSummary {
+  id: string;
+  slug: string;
+  title: string;
+  description: string;
+  isPublished: boolean;
+  lessonsCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AdminCourseDetail extends AdminCourseSummary {
+  lessons: AdminLessonDetail[];
 }
 
 export interface LessonDetail {
