@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { ArrowLeft, ExternalLink } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
 import type { AdminArticlePayload } from '@devagentshub/types';
 import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Label, Section, Textarea } from '@devagentshub/ui';
@@ -19,7 +19,9 @@ import { queryKeys } from '../../../lib/query-keys';
 import { StatusPanel } from '../../layout/status-panel';
 import { AdminAccessDenied } from './admin-access-denied';
 import { AdminAuthRequired } from './admin-auth-required';
+import { PublicationBadge, PublicPreviewShortcut } from './admin-content-status';
 import { AdminGate } from './admin-gate';
+import { AdminMarkdownField } from './admin-markdown-field';
 
 const defaultValues: AdminArticlePayload = {
   title: '',
@@ -48,6 +50,9 @@ const AdminArticleEditorContent = ({ articleId }: AdminArticleEditorProps) => {
     defaultValues,
   });
   const titleValue = form.watch('title');
+  const contentValue = form.watch('content');
+  const isPublishedValue = form.watch('isPublished');
+  const publicPreviewAvailable = Boolean(articleId && isPublishedValue && form.getValues('slug'));
 
   const articleQuery = useQuery({
     queryKey: queryKeys.adminArticle(articleId ?? 'new'),
@@ -144,8 +149,6 @@ const AdminArticleEditorContent = ({ articleId }: AdminArticleEditorProps) => {
     );
   }
 
-  const article = articleQuery.data;
-
   return (
     <Section className="space-y-6">
       <Link className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--color-accent)]" href="/admin/articles">
@@ -163,15 +166,15 @@ const AdminArticleEditorContent = ({ articleId }: AdminArticleEditorProps) => {
             Keep the content slice practical. Plain markdown is enough for the current MVP.
           </p>
         </div>
-        {article?.isPublished ? (
-          <Button asChild variant="secondary">
-            <Link href={`/guides/${article.slug}`}>
-              Open public guide
-              <ExternalLink className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
-        ) : null}
+        <PublicationBadge isPublished={isPublishedValue} />
       </div>
+
+      <PublicPreviewShortcut
+        href={`/guides/${form.getValues('slug')}`}
+        isPublished={publicPreviewAvailable}
+        label="Open public guide"
+        type="article"
+      />
 
       <Card>
         <CardHeader>
@@ -228,17 +231,26 @@ const AdminArticleEditorContent = ({ articleId }: AdminArticleEditorProps) => {
               ) : null}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="content">Content</Label>
-              <Textarea className="min-h-[320px]" id="content" {...form.register('content')} />
-              {form.formState.errors.content ? (
-                <p className="text-sm text-[var(--color-warm)]">{form.formState.errors.content.message}</p>
-              ) : null}
-            </div>
+            <AdminMarkdownField
+              description="Write markdown and switch to preview before saving to catch formatting issues early."
+              error={form.formState.errors.content?.message}
+              id="content"
+              label="Content"
+              textareaProps={form.register('content')}
+              value={contentValue}
+            />
 
-            <label className="flex items-center justify-between rounded-2xl border border-[var(--color-border)] px-4 py-3">
-              <span className="text-sm font-medium text-[var(--color-ink)]">Published</span>
-              <input type="checkbox" {...form.register('isPublished')} />
+            <label className="flex items-center justify-between gap-4 rounded-2xl border border-[var(--color-border)] px-4 py-3">
+              <span className="space-y-1">
+                <span className="block text-sm font-medium text-[var(--color-ink)]">Publication state</span>
+                <span className="block text-sm text-[var(--color-subtle)]">
+                  Drafts stay hidden from `/guides` until this switch is enabled and saved.
+                </span>
+              </span>
+              <span className="flex items-center gap-3">
+                <PublicationBadge isPublished={isPublishedValue} />
+                <input type="checkbox" {...form.register('isPublished')} />
+              </span>
             </label>
 
             {mutation.error instanceof ApiClientError ? (
@@ -249,7 +261,7 @@ const AdminArticleEditorContent = ({ articleId }: AdminArticleEditorProps) => {
 
             {mutation.isSuccess && articleId ? (
               <p className="rounded-2xl bg-[rgba(15,118,110,0.08)] px-4 py-3 text-sm text-[var(--color-accent-strong)]">
-                Article saved successfully.
+                Article saved successfully. {isPublishedValue ? 'The public guide is now updated.' : 'It remains hidden as a draft.'}
               </p>
             ) : null}
 

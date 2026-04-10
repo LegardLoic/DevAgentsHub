@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { ArrowLeft, ExternalLink, PlusCircle } from 'lucide-react';
+import { ArrowLeft, PlusCircle } from 'lucide-react';
 
 import type { AdminCoursePayload, AdminLessonDetail, AdminLessonPayload } from '@devagentshub/types';
 import {
@@ -38,7 +38,9 @@ import { queryKeys } from '../../../lib/query-keys';
 import { StatusPanel } from '../../layout/status-panel';
 import { AdminAccessDenied } from './admin-access-denied';
 import { AdminAuthRequired } from './admin-auth-required';
+import { PublicationBadge, PublicPreviewShortcut } from './admin-content-status';
 import { AdminGate } from './admin-gate';
+import { AdminMarkdownField } from './admin-markdown-field';
 
 const defaultCourseValues: AdminCoursePayload = {
   title: '',
@@ -74,6 +76,8 @@ const AdminCourseEditorContent = ({ courseId }: AdminCourseEditorProps) => {
     defaultValues: defaultCourseValues,
   });
   const courseTitle = courseForm.watch('title');
+  const courseIsPublished = courseForm.watch('isPublished');
+  const publicPreviewAvailable = Boolean(courseId && courseIsPublished && courseForm.getValues('slug'));
 
   const courseQuery = useQuery({
     queryKey: queryKeys.adminCourse(courseId ?? 'new'),
@@ -187,15 +191,15 @@ const AdminCourseEditorContent = ({ courseId }: AdminCourseEditorProps) => {
             Keep the learning slice publishable, explicit, and easy to iterate on.
           </p>
         </div>
-        {course?.isPublished ? (
-          <Button asChild variant="secondary">
-            <Link href={`/formations/${course.slug}`}>
-              Open public course
-              <ExternalLink className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
-        ) : null}
+        <PublicationBadge isPublished={courseIsPublished} />
       </div>
+
+      <PublicPreviewShortcut
+        href={`/formations/${courseForm.getValues('slug')}`}
+        isPublished={publicPreviewAvailable}
+        label="Open public course"
+        type="course"
+      />
 
       <Card>
         <CardHeader>
@@ -250,9 +254,17 @@ const AdminCourseEditorContent = ({ courseId }: AdminCourseEditorProps) => {
               ) : null}
             </div>
 
-            <label className="flex items-center justify-between rounded-2xl border border-[var(--color-border)] px-4 py-3">
-              <span className="text-sm font-medium text-[var(--color-ink)]">Published</span>
-              <input type="checkbox" {...courseForm.register('isPublished')} />
+            <label className="flex items-center justify-between gap-4 rounded-2xl border border-[var(--color-border)] px-4 py-3">
+              <span className="space-y-1">
+                <span className="block text-sm font-medium text-[var(--color-ink)]">Publication state</span>
+                <span className="block text-sm text-[var(--color-subtle)]">
+                  Draft courses and their lessons stay hidden from the public learning area until saved as published.
+                </span>
+              </span>
+              <span className="flex items-center gap-3">
+                <PublicationBadge isPublished={courseIsPublished} />
+                <input type="checkbox" {...courseForm.register('isPublished')} />
+              </span>
             </label>
 
             {saveCourseMutation.error instanceof ApiClientError ? (
@@ -263,7 +275,7 @@ const AdminCourseEditorContent = ({ courseId }: AdminCourseEditorProps) => {
 
             {saveCourseMutation.isSuccess && courseId ? (
               <p className="rounded-2xl bg-[rgba(15,118,110,0.08)] px-4 py-3 text-sm text-[var(--color-accent-strong)]">
-                Course saved successfully.
+                Course saved successfully. {courseIsPublished ? 'The public course is now updated.' : 'It remains hidden as a draft.'}
               </p>
             ) : null}
 
@@ -305,6 +317,7 @@ const LessonsManager = ({
     },
   });
   const createLessonTitle = createLessonForm.watch('title');
+  const createLessonContent = createLessonForm.watch('content');
 
   useEffect(() => {
     if (createSlugManuallyEdited) {
@@ -340,7 +353,8 @@ const LessonsManager = ({
         <Badge>Lessons</Badge>
         <h2 className="headline text-3xl font-bold">Manage lesson ordering and content</h2>
         <p className="max-w-2xl text-base leading-7 text-[var(--color-subtle)]">
-          Lessons stay inside the course workflow to keep ordering explicit and predictable.
+          Lessons stay inside the course workflow to keep ordering explicit and predictable. Lower order numbers appear
+          first in the public course.
         </p>
       </div>
 
@@ -415,13 +429,15 @@ const LessonsManager = ({
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="lesson-content">Content</Label>
-              <Textarea className="min-h-[220px]" id="lesson-content" {...createLessonForm.register('content')} />
-              {createLessonForm.formState.errors.content ? (
-                <p className="text-sm text-[var(--color-warm)]">{createLessonForm.formState.errors.content.message}</p>
-              ) : null}
-            </div>
+            <AdminMarkdownField
+              description="Preview lesson markdown before creating it. The rendered view matches public lesson pages."
+              error={createLessonForm.formState.errors.content?.message}
+              id="lesson-content"
+              label="Content"
+              minHeightClassName="min-h-[220px]"
+              textareaProps={createLessonForm.register('content')}
+              value={createLessonContent}
+            />
 
             {createLessonMutation.error instanceof ApiClientError ? (
               <p className="rounded-2xl bg-[rgba(234,88,12,0.1)] px-4 py-3 text-sm text-[var(--color-warm)]">
@@ -486,6 +502,7 @@ const LessonEditorCard = ({
     },
   });
   const titleValue = form.watch('title');
+  const contentValue = form.watch('content');
 
   useEffect(() => {
     form.reset({
@@ -537,21 +554,24 @@ const LessonEditorCard = ({
       <CardHeader>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="space-y-2">
-            <Badge>Lesson {lesson.order}</Badge>
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge>Lesson {lesson.order}</Badge>
+              <PublicationBadge isPublished={Boolean(publishedCourseSlug)} />
+            </div>
             <CardTitle>{lesson.title}</CardTitle>
-            <CardDescription>Updated {formatDate(lesson.updatedAt)}</CardDescription>
+            <CardDescription>
+              Saved as `{lesson.slug}` and updated {formatDate(lesson.updatedAt)}.
+            </CardDescription>
           </div>
-          {publishedCourseSlug ? (
-            <Button asChild size="sm" variant="secondary">
-              <Link href={`/formations/lessons/${lesson.slug}`}>
-                Open public lesson
-                <ExternalLink className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-          ) : null}
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-5">
+        <PublicPreviewShortcut
+          href={`/formations/lessons/${lesson.slug}`}
+          isPublished={Boolean(publishedCourseSlug)}
+          label="Open public lesson"
+          type="lesson"
+        />
         <form className="space-y-5" onSubmit={form.handleSubmit((values) => mutation.mutate(values))}>
           <div className="grid gap-5 md:grid-cols-2">
             <div className="space-y-2">
@@ -615,13 +635,15 @@ const LessonEditorCard = ({
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor={`lesson-content-${lesson.id}`}>Content</Label>
-            <Textarea className="min-h-[220px]" id={`lesson-content-${lesson.id}`} {...form.register('content')} />
-            {form.formState.errors.content ? (
-              <p className="text-sm text-[var(--color-warm)]">{form.formState.errors.content.message}</p>
-            ) : null}
-          </div>
+          <AdminMarkdownField
+            description="Preview lesson markdown before saving. This uses the same renderer as public lessons."
+            error={form.formState.errors.content?.message}
+            id={`lesson-content-${lesson.id}`}
+            label="Content"
+            minHeightClassName="min-h-[220px]"
+            textareaProps={form.register('content')}
+            value={contentValue}
+          />
 
           {mutation.error instanceof ApiClientError ? (
             <p className="rounded-2xl bg-[rgba(234,88,12,0.1)] px-4 py-3 text-sm text-[var(--color-warm)]">
@@ -631,7 +653,7 @@ const LessonEditorCard = ({
 
           {mutation.isSuccess ? (
             <p className="rounded-2xl bg-[rgba(15,118,110,0.08)] px-4 py-3 text-sm text-[var(--color-accent-strong)]">
-              Lesson saved successfully.
+              Lesson saved successfully. {publishedCourseSlug ? 'The public lesson is now updated.' : 'It remains hidden because the course is a draft.'}
             </p>
           ) : null}
 
