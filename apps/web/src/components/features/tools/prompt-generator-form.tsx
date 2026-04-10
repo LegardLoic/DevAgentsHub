@@ -2,6 +2,8 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
+import { useSearchParams } from 'next/navigation';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
 import type { PromptGeneratorOutput, ToolRunResult } from '@devagentshub/types';
@@ -20,19 +22,23 @@ import {
 import { promptGeneratorSchema, type PromptGeneratorInput } from '@devagentshub/validation';
 
 import { ApiClientError, postJson } from '../../../lib/api';
+import {
+  getPromptGeneratorInitialValues,
+  promptGeneratorDefaultValues,
+} from '../../../lib/tool-runs';
 import { StatusPanel } from '../../layout/status-panel';
 
 export const PromptGeneratorForm = () => {
+  const searchParams = useSearchParams();
+  const searchParamsKey = searchParams.toString();
   const form = useForm<PromptGeneratorInput>({
     resolver: zodResolver(promptGeneratorSchema),
-    defaultValues: {
-      projectType: 'Production-ready fullstack platform',
-      stack: 'Next.js, Express, Prisma, PostgreSQL',
-      goal: 'Scaffold a maintainable MVP with tools, guides, learning, and community features.',
-      constraints: 'Use strict typing, layered backend architecture, and local Docker-based PostgreSQL.',
-      detailLevel: 'detailed',
-    },
+    defaultValues: promptGeneratorDefaultValues,
   });
+
+  useEffect(() => {
+    form.reset(getPromptGeneratorInitialValues(new URLSearchParams(searchParamsKey)));
+  }, [form, searchParamsKey]);
 
   const mutation = useMutation({
     mutationFn: (values: PromptGeneratorInput) =>

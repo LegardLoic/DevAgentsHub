@@ -1,6 +1,9 @@
+import { Suspense } from 'react';
+
 import { Badge, Section } from '@devagentshub/ui';
 
 import { ProjectStructureForm } from '@/src/components/features/tools/project-structure-form';
+import { StatusPanel } from '@/src/components/layout/status-panel';
 
 export default function ProjectStructureGeneratorPage() {
   return (
@@ -13,7 +16,13 @@ export default function ProjectStructureGeneratorPage() {
           projects.
         </p>
       </div>
-      <ProjectStructureForm />
+      <Suspense
+        fallback={
+          <StatusPanel description="Preparing the project structure generator." title="Loading tool" tone="loading" />
+        }
+      >
+        <ProjectStructureForm />
+      </Suspense>
     </Section>
   );
 }

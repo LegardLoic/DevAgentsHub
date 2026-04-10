@@ -2,6 +2,8 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
+import { useSearchParams } from 'next/navigation';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
 import type { DebugHelperOutput, ToolRunResult } from '@devagentshub/types';
@@ -19,6 +21,7 @@ import {
 import { debugHelperSchema, type DebugHelperInput } from '@devagentshub/validation';
 
 import { ApiClientError, postJson } from '../../../lib/api';
+import { debugHelperDefaultValues, getDebugHelperInitialValues } from '../../../lib/tool-runs';
 import { StatusPanel } from '../../layout/status-panel';
 
 const DebugList = ({ items, title }: { items: string[]; title: string }) => (
@@ -35,16 +38,16 @@ const DebugList = ({ items, title }: { items: string[]; title: string }) => (
 );
 
 export const DebugHelperForm = () => {
+  const searchParams = useSearchParams();
+  const searchParamsKey = searchParams.toString();
   const form = useForm<DebugHelperInput>({
     resolver: zodResolver(debugHelperSchema),
-    defaultValues: {
-      errorMessage: 'TypeError: Cannot read properties of undefined (reading "profile")',
-      codeSnippet:
-        "const displayName = data.user.profile.displayName;\nreturn <span>{displayName}</span>;",
-      technicalContext:
-        'Next.js frontend calling an authenticated API endpoint where the user can exist without a profile.',
-    },
+    defaultValues: debugHelperDefaultValues,
   });
+
+  useEffect(() => {
+    form.reset(getDebugHelperInitialValues(new URLSearchParams(searchParamsKey)));
+  }, [form, searchParamsKey]);
 
   const mutation = useMutation({
     mutationFn: (values: DebugHelperInput) =>
