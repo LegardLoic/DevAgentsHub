@@ -53,3 +53,17 @@ export const requireAuth = (req: Request, _res: Response, next: NextFunction): v
 
   next();
 };
+
+export const requireAdmin = (req: Request, _res: Response, next: NextFunction): void => {
+  if (!req.authUser) {
+    next(new AppError('Authentication is required for this action.', 401, 'UNAUTHORIZED'));
+    return;
+  }
+
+  if (req.authUser.role !== 'ADMIN') {
+    next(new AppError('Admin access is required for this action.', 403, 'FORBIDDEN'));
+    return;
+  }
+
+  next();
+};

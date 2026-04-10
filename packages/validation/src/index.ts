@@ -55,6 +55,36 @@ export const lessonProgressSchema = z.object({
   completed: z.boolean(),
 });
 
+const contentSlugSchema = z
+  .string()
+  .trim()
+  .min(2, 'Slug is required')
+  .max(120, 'Slug must be shorter than 120 characters')
+  .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Slug must use lowercase letters, numbers, and hyphens only');
+
+export const adminArticleSchema = z.object({
+  title: z.string().trim().min(5, 'Title must be at least 5 characters').max(160),
+  slug: contentSlugSchema,
+  excerpt: z.string().trim().min(20, 'Excerpt must be at least 20 characters').max(400),
+  content: z.string().trim().min(40, 'Content must be at least 40 characters').max(40000),
+  isPublished: z.boolean(),
+});
+
+export const adminCourseSchema = z.object({
+  title: z.string().trim().min(5, 'Title must be at least 5 characters').max(160),
+  slug: contentSlugSchema,
+  description: z.string().trim().min(20, 'Description must be at least 20 characters').max(1200),
+  isPublished: z.boolean(),
+});
+
+export const adminLessonSchema = z.object({
+  title: z.string().trim().min(5, 'Title must be at least 5 characters').max(160),
+  slug: contentSlugSchema,
+  excerpt: z.string().trim().min(20, 'Excerpt must be at least 20 characters').max(400),
+  content: z.string().trim().min(40, 'Content must be at least 40 characters').max(40000),
+  order: z.number().int().min(1, 'Order must be 1 or higher'),
+});
+
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type PromptGeneratorInput = z.infer<typeof promptGeneratorSchema>;
@@ -63,4 +93,6 @@ export type DebugHelperInput = z.infer<typeof debugHelperSchema>;
 export type DiscussionInput = z.infer<typeof discussionSchema>;
 export type DiscussionReplyInput = z.infer<typeof discussionReplySchema>;
 export type LessonProgressInput = z.infer<typeof lessonProgressSchema>;
-
+export type AdminArticleInput = z.infer<typeof adminArticleSchema>;
+export type AdminCourseInput = z.infer<typeof adminCourseSchema>;
+export type AdminLessonInput = z.infer<typeof adminLessonSchema>;
