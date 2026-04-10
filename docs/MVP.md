@@ -196,6 +196,7 @@ repo/
 - `/dashboard/saved-runs`
 - `/dashboard/templates`
 - `/dashboard/templates/[id]`
+- `/dashboard/bookmarks`
 
 ## Admin minimal
 - `/admin`
@@ -228,6 +229,9 @@ repo/
 - `GET /api/me/templates/:id`
 - `POST /api/me/templates`
 - `PATCH /api/me/templates/:id`
+- `GET /api/me/bookmarks`
+- `POST /api/me/bookmarks`
+- `DELETE /api/me/bookmarks/:id`
 
 ## Content
 - `GET /api/articles`
@@ -317,6 +321,13 @@ repo/
 - lessonId
 - completed
 - completedAt
+
+## Bookmark
+- id
+- userId
+- articleId nullable
+- courseId nullable
+- createdAt
 
 ## Discussion
 - id

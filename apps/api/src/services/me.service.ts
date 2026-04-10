@@ -1,7 +1,10 @@
-import type { CreateTemplateInput, UpdateTemplateInput } from '@devagentshub/validation';
+import type { CreateBookmarkInput, CreateTemplateInput, UpdateTemplateInput } from '@devagentshub/validation';
 import { parseTemplateInput } from '@devagentshub/validation';
 
 import { AppError } from '../utils/app-error';
+import { articleRepository, type ArticleRepository } from '../repositories/article.repository';
+import { bookmarkRepository, type BookmarkRepository } from '../repositories/bookmark.repository';
+import { courseRepository, type CourseRepository } from '../repositories/course.repository';
 import { templateRepository, type TemplateRepository } from '../repositories/template.repository';
 import { toolRepository, type ToolRepository } from '../repositories/tool.repository';
 
@@ -9,6 +12,9 @@ export class MeService {
   constructor(
     private readonly tools: ToolRepository = toolRepository,
     private readonly templates: TemplateRepository = templateRepository,
+    private readonly bookmarks: BookmarkRepository = bookmarkRepository,
+    private readonly articles: ArticleRepository = articleRepository,
+    private readonly courses: CourseRepository = courseRepository,
   ) {}
 
   async listToolRuns(userId: string) {
@@ -69,6 +75,54 @@ export class MeService {
     }
 
     return updatedTemplate;
+  }
+
+  async listBookmarks(userId: string) {
+    return this.bookmarks.listByUserId(userId);
+  }
+
+  async createBookmark(userId: string, input: CreateBookmarkInput) {
+    if (input.targetType === 'article') {
+      const article = await this.articles.findPublishedById(input.targetId);
+
+      if (!article) {
+        throw new AppError('The article to bookmark could not be found.', 404, 'BOOKMARK_TARGET_NOT_FOUND');
+      }
+
+      const existingBookmark = await this.bookmarks.findByTargetForUser(userId, 'article', input.targetId);
+
+      if (existingBookmark) {
+        throw new AppError('This article is already bookmarked.', 409, 'BOOKMARK_ALREADY_EXISTS');
+      }
+
+      return this.bookmarks.createArticleBookmark(userId, input.targetId);
+    }
+
+    const course = await this.courses.findPublishedById(input.targetId);
+
+    if (!course) {
+      throw new AppError('The course to bookmark could not be found.', 404, 'BOOKMARK_TARGET_NOT_FOUND');
+    }
+
+    const existingBookmark = await this.bookmarks.findByTargetForUser(userId, 'course', input.targetId);
+
+    if (existingBookmark) {
+      throw new AppError('This course is already bookmarked.', 409, 'BOOKMARK_ALREADY_EXISTS');
+    }
+
+    return this.bookmarks.createCourseBookmark(userId, input.targetId);
+  }
+
+  async deleteBookmark(userId: string, id: string) {
+    const deleted = await this.bookmarks.deleteByIdForUser(userId, id);
+
+    if (!deleted) {
+      throw new AppError('The requested bookmark could not be found.', 404, 'BOOKMARK_NOT_FOUND');
+    }
+
+    return {
+      success: true,
+    };
   }
 }
 

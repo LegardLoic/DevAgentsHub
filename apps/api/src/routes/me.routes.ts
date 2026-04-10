@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 
-import { createTemplateSchema, updateTemplateSchema } from '@devagentshub/validation';
+import { createBookmarkSchema, createTemplateSchema, updateTemplateSchema } from '@devagentshub/validation';
 
 import { meController } from '../controllers/me.controller';
 import { requireAuth } from '../middlewares/auth';
@@ -26,3 +26,6 @@ meRoutes.patch(
   validateBody(updateTemplateSchema),
   meController.updateTemplate,
 );
+meRoutes.get('/bookmarks', meController.listBookmarks);
+meRoutes.post('/bookmarks', validateBody(createBookmarkSchema), meController.createBookmark);
+meRoutes.delete('/bookmarks/:id', validateParams(toolRunParamsSchema), meController.deleteBookmark);

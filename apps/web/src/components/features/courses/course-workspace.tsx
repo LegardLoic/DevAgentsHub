@@ -22,6 +22,7 @@ import { ApiClientError, apiFetch, getApiClientErrorMessage, postJson } from '..
 import { queryKeys } from '../../../lib/query-keys';
 import { useCurrentUser } from '../../../hooks/use-auth';
 import { StatusPanel } from '../../layout/status-panel';
+import { BookmarkAction } from '../bookmarks/bookmark-action';
 import { LessonDetailCard } from './lesson-detail-card';
 
 export const CourseWorkspace = ({ slug }: { slug: string }) => {
@@ -112,6 +113,12 @@ export const CourseWorkspace = ({ slug }: { slug: string }) => {
               <CardDescription>{courseQuery.data.description}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              <BookmarkAction
+                loginNextPath={`/formations/${courseQuery.data.slug}`}
+                targetId={courseQuery.data.id}
+                targetTitle={courseQuery.data.title}
+                targetType="course"
+              />
               {courseQuery.data.lessons.map((lesson) => (
                 <div
                   key={lesson.id}
