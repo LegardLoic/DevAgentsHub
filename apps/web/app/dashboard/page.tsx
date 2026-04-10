@@ -6,7 +6,7 @@ import { DashboardOverview } from '@/src/components/features/dashboard/dashboard
 
 export const metadata: Metadata = {
   title: `Dashboard | ${siteConfig.name}`,
-  description: 'Review your saved tool history and jump back into DevAgentsHub workflows.',
+  description: 'Review saved runs, manage reusable templates, and jump back into DevAgentsHub workflows.',
 };
 
 export default function DashboardPage() {
