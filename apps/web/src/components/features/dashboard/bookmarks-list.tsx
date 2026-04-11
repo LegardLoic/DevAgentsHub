@@ -185,7 +185,7 @@ export const BookmarksList = () => {
           Back to dashboard
         </Link>
         <EmptyState
-          description="Bookmark a guide or course and it will appear here as a quick path back into useful content."
+          description="Bookmarks keep useful guides and courses one click away. Save content when it helps a decision, then revisit it from the dashboard before applying it with tools."
           icon={<Bookmark className="h-6 w-6 text-[var(--color-accent)]" />}
           title="No bookmarks yet"
         />

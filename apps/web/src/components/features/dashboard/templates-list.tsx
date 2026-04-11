@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, Layers3, SlidersHorizontal } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Layers3, SlidersHorizontal, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 
 import { toolCatalog } from '@devagentshub/config';
@@ -137,16 +137,16 @@ export const TemplatesList = () => {
           Back to dashboard
         </Link>
         <EmptyState
-          description="Save one of your authenticated tool runs as a template and it will appear here."
+          description="Templates save time when a workflow repeats. Start by running a tool, then save the useful input from a saved run as your first reusable template."
           icon={<Layers3 className="h-6 w-6 text-[var(--color-accent)]" />}
           title="No templates yet"
         />
         <div className="flex flex-wrap gap-3">
           <Button asChild>
-            <Link href="/dashboard/saved-runs">Review saved runs</Link>
+            <Link href="/tools/prompt-generator">Run a tool first</Link>
           </Button>
           <Button asChild variant="secondary">
-            <Link href="/tools">Open tools</Link>
+            <Link href="/dashboard/saved-runs">Review saved runs</Link>
           </Button>
         </div>
       </Section>
@@ -171,6 +171,20 @@ export const TemplatesList = () => {
           run history.
         </p>
       </div>
+
+      <Card className="border-dashed bg-[var(--color-surface)]/80">
+        <CardHeader>
+          <div className="flex items-center gap-3">
+            <Sparkles className="h-5 w-5 text-[var(--color-accent)]" />
+            <Badge>Workflow hint</Badge>
+          </div>
+          <CardTitle>Use templates when the same input keeps coming back</CardTitle>
+          <CardDescription>
+            Rename or edit a template, then run the matching tool with the stored fields prefilled.
+            Templates are for reusable work; saved runs remain the immutable history.
+          </CardDescription>
+        </CardHeader>
+      </Card>
 
       <Card>
         <CardHeader>
