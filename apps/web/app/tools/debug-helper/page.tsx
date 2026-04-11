@@ -1,9 +1,21 @@
 import { Suspense } from 'react';
+import type { Metadata } from 'next';
 
 import { Badge, Section } from '@devagentshub/ui';
 
 import { DebugHelperForm } from '@/src/components/features/tools/debug-helper-form';
+import { ContextualLinkCards } from '@/src/components/layout/contextual-link-cards';
 import { StatusPanel } from '@/src/components/layout/status-panel';
+import { getToolContextualLinks } from '@/src/lib/contextual-links';
+import { buildSeoMetadata } from '@/src/lib/seo';
+
+export const metadata: Metadata = buildSeoMetadata({
+  title: 'Debug Helper for Developers',
+  description:
+    'Turn errors, stack context, and code snippets into practical debugging plans with likely causes, fixes, and regression checks.',
+  path: '/tools/debug-helper',
+  keywords: ['debug helper', 'AI debugging tool', 'developer debugging plan', 'code error analysis'],
+});
 
 export default function DebugHelperPage() {
   return (
@@ -22,6 +34,12 @@ export default function DebugHelperPage() {
       >
         <DebugHelperForm />
       </Suspense>
+      <ContextualLinkCards
+        description="Use the debug helper as a practical step, then connect the diagnosis to workflow guidance or community feedback."
+        eyebrow="Related pathways"
+        links={getToolContextualLinks('debug-helper')}
+        title="Turn debugging into a repeatable loop"
+      />
     </Section>
   );
 }

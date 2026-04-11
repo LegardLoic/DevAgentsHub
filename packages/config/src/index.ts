@@ -2,6 +2,7 @@ import type { CourseSummary, ToolSummary } from '@devagentshub/types';
 
 export const siteConfig = {
   name: 'DevAgentsHub',
+  url: 'https://devagentshub-web.onrender.com',
   description:
     'A developer platform that combines AI-focused tooling, guides, learning paths, and community discussions.',
   tagline: 'Ship faster with better prompts, cleaner architecture, and a focused learning loop.',

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import { ArrowRight, Sparkles } from 'lucide-react';
 
 import { toolCatalog } from '@devagentshub/config';
@@ -12,6 +13,16 @@ import {
   CardTitle,
   Section,
 } from '@devagentshub/ui';
+
+import { buildSeoMetadata } from '@/src/lib/seo';
+
+export const metadata: Metadata = buildSeoMetadata({
+  title: 'AI Developer Tools for Prompts, Project Structure, and Debugging',
+  description:
+    'Run focused developer tools for coding-agent prompts, project architecture, and debugging plans, then save useful runs and templates.',
+  path: '/tools',
+  keywords: ['AI developer tools', 'prompt generator', 'project structure generator', 'debug helper'],
+});
 
 export default function ToolsPage() {
   return (

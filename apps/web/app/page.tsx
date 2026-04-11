@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import {
   ArrowRight,
   Bookmark,
@@ -23,6 +24,16 @@ import {
   CardTitle,
   Section,
 } from '@devagentshub/ui';
+
+import { buildSeoMetadata } from '@/src/lib/seo';
+
+export const metadata: Metadata = buildSeoMetadata({
+  title: 'AI Developer Tools, Guides, and Workflow Hub',
+  description:
+    'Use DevAgentsHub to generate better coding prompts, structure AI-assisted projects, debug faster, and save reusable development workflows.',
+  path: '/',
+  keywords: ['AI developer tools', 'prompt generator', 'coding agents', 'developer workflow'],
+});
 
 const workflowSteps = [
   {
