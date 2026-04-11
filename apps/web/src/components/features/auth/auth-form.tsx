@@ -58,7 +58,7 @@ export const AuthForm = ({ mode }: AuthFormProps) => {
   const queryClient = useQueryClient();
   const copy = authCopy[mode];
   const nextPath = searchParams.get('next');
-  const redirectPath = nextPath?.startsWith('/') ? nextPath : mode === 'login' ? '/community' : '/';
+  const redirectPath = nextPath?.startsWith('/') ? nextPath : '/dashboard';
 
   const form = useForm<AuthFormValues>({
     defaultValues: {
@@ -114,21 +114,31 @@ export const AuthForm = ({ mode }: AuthFormProps) => {
             <Label htmlFor="email">Email</Label>
             <Input id="email" required type="email" {...form.register('email')} />
             {form.formState.errors.email ? (
-              <p className="text-sm text-[var(--color-warm)]">{form.formState.errors.email.message}</p>
+              <p className="text-sm text-[var(--color-warm)]">
+                {form.formState.errors.email.message}
+              </p>
             ) : null}
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
-            <Input id="password" minLength={8} required type="password" {...form.register('password')} />
+            <Input
+              id="password"
+              minLength={8}
+              required
+              type="password"
+              {...form.register('password')}
+            />
             {form.formState.errors.password ? (
               <p className="text-sm text-[var(--color-warm)]">
                 {form.formState.errors.password.message}
               </p>
             ) : null}
           </div>
-          {authMutation.error instanceof ApiClientError ? (
+          {authMutation.error ? (
             <p className="rounded-2xl bg-[rgba(234,88,12,0.1)] px-4 py-3 text-sm text-[var(--color-warm)]">
-              {authMutation.error.message}
+              {authMutation.error instanceof ApiClientError
+                ? authMutation.error.message
+                : 'Authentication failed. Check the API URL, CORS settings, or network connection.'}
             </p>
           ) : null}
           <Button className="w-full" disabled={authMutation.isPending} type="submit">
@@ -138,7 +148,11 @@ export const AuthForm = ({ mode }: AuthFormProps) => {
             {copy.footerLabel}{' '}
             <Link
               className="font-semibold text-[var(--color-accent)]"
-              href={redirectPath !== '/' ? `${copy.footerHref}?next=${encodeURIComponent(redirectPath)}` : copy.footerHref}
+              href={
+                redirectPath !== '/'
+                  ? `${copy.footerHref}?next=${encodeURIComponent(redirectPath)}`
+                  : copy.footerHref
+              }
             >
               {copy.footerAction}
             </Link>

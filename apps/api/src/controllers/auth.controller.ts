@@ -9,7 +9,7 @@ import { authService, type AuthService } from '../services/auth.service';
 const setAuthCookie = (res: Response, token: string) => {
   res.cookie(AUTH_COOKIE_NAME, token, {
     httpOnly: true,
-    sameSite: 'lax',
+    sameSite: env.isProduction ? 'none' : 'lax',
     secure: env.isProduction,
     maxAge: AUTH_COOKIE_MAX_AGE,
   });
@@ -45,7 +45,7 @@ export class AuthController {
   logout = asyncHandler(async (_req, res) => {
     res.clearCookie(AUTH_COOKIE_NAME, {
       httpOnly: true,
-      sameSite: 'lax',
+      sameSite: env.isProduction ? 'none' : 'lax',
       secure: env.isProduction,
     });
 
@@ -70,4 +70,3 @@ export class AuthController {
 }
 
 export const authController = new AuthController();
-
