@@ -113,13 +113,18 @@ export const SavedRunsList = () => {
           Back to dashboard
         </Link>
         <EmptyState
-          description="Run one of the tools while logged in and the result will appear here automatically."
+          description="Saved runs are your history. Run a tool while logged in and the output will appear here so you can copy it, rerun it, or convert the input into a reusable template."
           icon={<History className="h-6 w-6 text-[var(--color-accent)]" />}
           title="No saved runs yet"
         />
-        <Button asChild>
-          <Link href="/tools">Open tools</Link>
-        </Button>
+        <div className="flex flex-wrap gap-3">
+          <Button asChild>
+            <Link href="/tools/prompt-generator">Run your first tool</Link>
+          </Button>
+          <Button asChild variant="secondary">
+            <Link href="/guides">Read a guide first</Link>
+          </Button>
+        </div>
       </Section>
     );
   }

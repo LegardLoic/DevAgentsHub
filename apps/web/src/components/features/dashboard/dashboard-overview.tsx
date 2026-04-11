@@ -7,6 +7,7 @@ import {
   ArrowRight,
   Bookmark,
   BookOpenText,
+  CheckCircle2,
   Compass,
   History,
   Layers3,
@@ -86,6 +87,14 @@ interface RecentActivityGroupProps {
   title: string;
 }
 
+interface OnboardingStep {
+  href: string;
+  eyebrow: string;
+  title: string;
+  description: string;
+  actionLabel: string;
+}
+
 const quickActions: QuickAction[] = [
   {
     href: '/tools',
@@ -114,6 +123,30 @@ const quickActions: QuickAction[] = [
     title: 'Start a guide',
     description: 'Frame the next decision before executing it.',
     label: 'Browse guides',
+  },
+];
+
+const onboardingSteps: OnboardingStep[] = [
+  {
+    href: '/tools/prompt-generator',
+    eyebrow: 'Step 1',
+    title: 'Run your first tool',
+    description: 'Start with a prompt generator run so the dashboard has a concrete result to save.',
+    actionLabel: 'Open prompt generator',
+  },
+  {
+    href: '/dashboard/saved-runs',
+    eyebrow: 'Step 2',
+    title: 'Review the result',
+    description: 'Saved runs become your history. Reopen one, copy the output, or turn it into a template.',
+    actionLabel: 'View saved runs',
+  },
+  {
+    href: '/guides',
+    eyebrow: 'Step 3',
+    title: 'Frame the next decision',
+    description: 'Use guides and courses to understand what to try next, then loop back into the tools.',
+    actionLabel: 'Browse guides',
   },
 ];
 
@@ -183,6 +216,46 @@ const MetricCard = ({ icon, label, value, description, href }: MetricCardProps) 
         Review
         <ArrowRight className="h-4 w-4" />
       </Link>
+    </CardContent>
+  </Card>
+);
+
+const GettingStartedBlock = () => (
+  <Card className="overflow-hidden bg-[linear-gradient(135deg,rgba(15,118,110,0.14),rgba(255,255,255,0.94))]">
+    <CardHeader className="space-y-4">
+      <div className="flex flex-wrap items-center gap-3">
+        <Badge>Start here</Badge>
+        <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-subtle)]">
+          New workspace
+        </span>
+      </div>
+      <div className="space-y-2">
+        <CardTitle className="headline text-3xl md:text-4xl">Try DevAgentsHub in 3 steps</CardTitle>
+        <CardDescription className="max-w-3xl text-base leading-7">
+          Your workspace is empty. Run one tool first, then use the saved result to understand how runs,
+          templates, bookmarks, and guides connect.
+        </CardDescription>
+      </div>
+    </CardHeader>
+    <CardContent className="grid gap-3 md:grid-cols-3">
+      {onboardingSteps.map((step) => (
+        <Link
+          className="group rounded-3xl border border-[var(--color-border)] bg-white/75 p-4 transition hover:-translate-y-0.5 hover:bg-white"
+          href={step.href}
+          key={step.href}
+        >
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="h-4 w-4 text-[var(--color-accent)]" />
+            <Badge>{step.eyebrow}</Badge>
+          </div>
+          <p className="mt-4 font-semibold text-[var(--color-ink)]">{step.title}</p>
+          <p className="mt-2 text-sm leading-6 text-[var(--color-subtle)]">{step.description}</p>
+          <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-[var(--color-accent)]">
+            {step.actionLabel}
+            <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
+          </span>
+        </Link>
+      ))}
     </CardContent>
   </Card>
 );
@@ -396,6 +469,15 @@ export const DashboardOverview = () => {
   const runs = runsQuery.data ?? [];
   const templates = templatesQuery.data ?? [];
   const bookmarks = bookmarksQuery.data ?? [];
+  const workspaceStateReady =
+    !runsQuery.isLoading &&
+    !runsQuery.isError &&
+    !templatesQuery.isLoading &&
+    !templatesQuery.isError &&
+    !bookmarksQuery.isLoading &&
+    !bookmarksQuery.isError;
+  const isNewWorkspace =
+    workspaceStateReady && runs.length === 0 && templates.length === 0 && bookmarks.length === 0;
 
   return (
     <Section className="space-y-8">
@@ -420,6 +502,8 @@ export const DashboardOverview = () => {
           </CardHeader>
         </Card>
       </div>
+
+      {isNewWorkspace ? <GettingStartedBlock /> : null}
 
       <div className="grid gap-4 md:grid-cols-3">
         <MetricCard
