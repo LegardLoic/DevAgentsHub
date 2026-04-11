@@ -13,6 +13,7 @@ import { authRoutes } from '../routes/auth.routes';
 import { courseRoutes } from '../routes/course.routes';
 import { discussionRoutes } from '../routes/discussion.routes';
 import { meRoutes } from '../routes/me.routes';
+import { searchRoutes } from '../routes/search.routes';
 import { toolRoutes } from '../routes/tool.routes';
 
 export const createApp = () => {
@@ -49,6 +50,7 @@ export const createApp = () => {
   app.use('/api/articles', articleRoutes);
   app.use('/api/courses', courseRoutes);
   app.use('/api/discussions', discussionRoutes);
+  app.use('/api/search', searchRoutes);
 
   app.use(notFoundHandler);
   app.use(errorHandler);

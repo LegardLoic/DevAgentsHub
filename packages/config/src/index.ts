@@ -10,6 +10,7 @@ export const siteConfig = {
 export const navigationItems = [
   { href: '/', label: 'Home' },
   { href: '/tools', label: 'Tools' },
+  { href: '/search', label: 'Search' },
   { href: '/guides', label: 'Guides' },
   { href: '/formations', label: 'Formations' },
   { href: '/community', label: 'Community' },
@@ -52,4 +53,3 @@ export const featuredCourse: Omit<CourseSummary, 'id'> = {
 };
 
 export const gitWorkflow = ['main', 'develop', 'feature/*', 'fix/*', 'hotfix/*'];
-
