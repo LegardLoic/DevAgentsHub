@@ -1,9 +1,21 @@
 import { Suspense } from 'react';
+import type { Metadata } from 'next';
 
 import { Badge, Section } from '@devagentshub/ui';
 
 import { ProjectStructureForm } from '@/src/components/features/tools/project-structure-form';
+import { ContextualLinkCards } from '@/src/components/layout/contextual-link-cards';
 import { StatusPanel } from '@/src/components/layout/status-panel';
+import { getToolContextualLinks } from '@/src/lib/contextual-links';
+import { buildSeoMetadata } from '@/src/lib/seo';
+
+export const metadata: Metadata = buildSeoMetadata({
+  title: 'Project Structure Generator for AI-Assisted Development',
+  description:
+    'Generate clean project trees for Next.js, Express, monorepos, and documentation-heavy projects with maintainable architecture boundaries.',
+  path: '/tools/project-structure-generator',
+  keywords: ['project structure generator', 'AI-assisted architecture', 'monorepo structure', 'Next.js project tree'],
+});
 
 export default function ProjectStructureGeneratorPage() {
   return (
@@ -23,6 +35,12 @@ export default function ProjectStructureGeneratorPage() {
       >
         <ProjectStructureForm />
       </Suspense>
+      <ContextualLinkCards
+        description="Connect generated architecture to the guides and learning paths that explain the tradeoffs."
+        eyebrow="Related pathways"
+        links={getToolContextualLinks('project-structure-generator')}
+        title="Structure the project, then validate the workflow"
+      />
     </Section>
   );
 }

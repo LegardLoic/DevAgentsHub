@@ -9,6 +9,27 @@ import { guidesPageMetadata } from '@/src/lib/guides';
 
 export const metadata: Metadata = guidesPageMetadata;
 
+const contentPaths = [
+  {
+    title: 'Prompting and agent briefs',
+    description: 'Start here when the problem is unclear scope, weak prompts, or missing delivery constraints.',
+    href: '/guides/brief-coding-agents-clearly',
+    action: 'Read prompting guide',
+  },
+  {
+    title: 'Architecture and project structure',
+    description: 'Use this path when generated work needs cleaner folders, ownership, and implementation boundaries.',
+    href: '/guides/structure-ai-dev-projects-cleanly',
+    action: 'Read structure guide',
+  },
+  {
+    title: 'Workflow and review loops',
+    description: 'Use this path to connect AI-assisted implementation with testing, review, and reusable habits.',
+    href: '/guides/use-ai-agents-in-dev-workflow',
+    action: 'Read workflow guide',
+  },
+];
+
 export default function GuidesPage() {
   return (
     <Section className="space-y-8">
@@ -43,6 +64,23 @@ export default function GuidesPage() {
           </Button>
         </CardContent>
       </Card>
+      <div className="grid gap-4 md:grid-cols-3">
+        {contentPaths.map((path) => (
+          <Card className="h-full" key={path.href}>
+            <CardHeader>
+              <Badge>Content path</Badge>
+              <CardTitle>{path.title}</CardTitle>
+              <CardDescription>{path.description}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--color-accent)]" href={path.href}>
+                {path.action}
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
       <ArticlesFeed />
     </Section>
   );
