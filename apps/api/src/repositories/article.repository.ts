@@ -4,6 +4,7 @@ import type {
   AdminArticleDetail,
   AdminArticleSummary,
   ArticleDetail,
+  ArticleMetadata,
   ArticlePreview,
 } from '@devagentshub/types';
 import type { AdminArticleInput } from '@devagentshub/validation';
@@ -15,6 +16,7 @@ const articleSelect = {
   slug: true,
   title: true,
   excerpt: true,
+  metaDescription: true,
   content: true,
   createdAt: true,
   updatedAt: true,
@@ -33,14 +35,44 @@ type AdminArticleRecord = Prisma.ArticleGetPayload<{
   select: typeof adminArticleSelect;
 }>;
 
+const articleMetadataSelect = {
+  id: true,
+  slug: true,
+  title: true,
+  excerpt: true,
+  metaDescription: true,
+} satisfies Prisma.ArticleSelect;
+
+type ArticleMetadataRecord = Prisma.ArticleGetPayload<{
+  select: typeof articleMetadataSelect;
+}>;
+
+const normalizeArticleInput = (input: AdminArticleInput): Prisma.ArticleCreateInput => ({
+  title: input.title,
+  slug: input.slug,
+  excerpt: input.excerpt,
+  metaDescription: input.metaDescription?.trim() ? input.metaDescription.trim() : null,
+  content: input.content,
+  isPublished: input.isPublished,
+});
+
 const serializeArticle = (article: ArticleRecord): ArticleDetail => ({
   id: article.id,
   slug: article.slug,
   title: article.title,
   excerpt: article.excerpt,
+  metaDescription: article.metaDescription,
   content: article.content,
   createdAt: article.createdAt.toISOString(),
   updatedAt: article.updatedAt.toISOString(),
+});
+
+const serializeArticleMetadata = (article: ArticleMetadataRecord): ArticleMetadata => ({
+  id: article.id,
+  slug: article.slug,
+  title: article.title,
+  excerpt: article.excerpt,
+  metaDescription: article.metaDescription,
 });
 
 const serializeAdminArticleSummary = (article: AdminArticleRecord): AdminArticleSummary => ({
@@ -48,6 +80,7 @@ const serializeAdminArticleSummary = (article: AdminArticleRecord): AdminArticle
   slug: article.slug,
   title: article.title,
   excerpt: article.excerpt,
+  metaDescription: article.metaDescription,
   isPublished: article.isPublished,
   createdAt: article.createdAt.toISOString(),
   updatedAt: article.updatedAt.toISOString(),
@@ -79,6 +112,18 @@ export class ArticleRepository {
     });
 
     return article ? serializeArticle(article) : null;
+  }
+
+  async findPublishedMetadataBySlug(slug: string): Promise<ArticleMetadata | null> {
+    const article = await prisma.article.findFirst({
+      where: {
+        slug,
+        isPublished: true,
+      },
+      select: articleMetadataSelect,
+    });
+
+    return article ? serializeArticleMetadata(article) : null;
   }
 
   async findPublishedById(id: string): Promise<ArticlePreview | null> {
@@ -122,7 +167,7 @@ export class ArticleRepository {
 
   async createArticle(input: AdminArticleInput): Promise<AdminArticleDetail> {
     const article = await prisma.article.create({
-      data: input,
+      data: normalizeArticleInput(input),
       select: adminArticleSelect,
     });
 
@@ -132,7 +177,7 @@ export class ArticleRepository {
   async updateArticle(id: string, input: AdminArticleInput): Promise<AdminArticleDetail> {
     const article = await prisma.article.update({
       where: { id },
-      data: input,
+      data: normalizeArticleInput(input),
       select: adminArticleSelect,
     });
 

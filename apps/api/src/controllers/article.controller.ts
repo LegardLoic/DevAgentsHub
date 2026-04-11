@@ -19,6 +19,14 @@ export class ArticleController {
       data: article,
     });
   });
+
+  getMetadataBySlug = asyncHandler(async (req, res) => {
+    const article = await this.articles.getArticleMetadata(req.params.slug as string);
+
+    res.status(200).json({
+      data: article,
+    });
+  });
 }
 
 export const articleController = new ArticleController();

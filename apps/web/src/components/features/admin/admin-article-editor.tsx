@@ -27,6 +27,7 @@ const defaultValues: AdminArticlePayload = {
   title: '',
   slug: '',
   excerpt: '',
+  metaDescription: '',
   content: '',
   isPublished: false,
 };
@@ -69,6 +70,7 @@ const AdminArticleEditorContent = ({ articleId }: AdminArticleEditorProps) => {
       title: articleQuery.data.title,
       slug: articleQuery.data.slug,
       excerpt: articleQuery.data.excerpt,
+      metaDescription: articleQuery.data.metaDescription ?? '',
       content: articleQuery.data.content,
       isPublished: articleQuery.data.isPublished,
     });
@@ -101,6 +103,7 @@ const AdminArticleEditorContent = ({ articleId }: AdminArticleEditorProps) => {
         title: article.title,
         slug: article.slug,
         excerpt: article.excerpt,
+        metaDescription: article.metaDescription ?? '',
         content: article.content,
         isPublished: article.isPublished,
       });
@@ -228,6 +231,23 @@ const AdminArticleEditorContent = ({ articleId }: AdminArticleEditorProps) => {
               <Textarea id="excerpt" {...form.register('excerpt')} />
               {form.formState.errors.excerpt ? (
                 <p className="text-sm text-[var(--color-warm)]">{form.formState.errors.excerpt.message}</p>
+              ) : null}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="metaDescription">SEO meta description</Label>
+              <Textarea
+                id="metaDescription"
+                placeholder="Optional. Keep it clear and useful for search results."
+                {...form.register('metaDescription')}
+              />
+              <p className="text-sm text-[var(--color-subtle)]">
+                Used for guide metadata and social previews. If empty, the public page falls back to the excerpt.
+              </p>
+              {form.formState.errors.metaDescription ? (
+                <p className="text-sm text-[var(--color-warm)]">
+                  {form.formState.errors.metaDescription.message}
+                </p>
               ) : null}
             </div>
 

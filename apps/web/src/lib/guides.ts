@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 
 import { siteConfig } from '@devagentshub/config';
+import type { ArticleMetadata } from '@devagentshub/types';
 
+import { apiFetch } from './api';
 import { buildSeoMetadata } from './seo';
 
 interface GuideSeoEntry {
@@ -39,7 +41,15 @@ export const guidesPageMetadata: Metadata = buildSeoMetadata({
   keywords: ['AI development guides', 'developer prompts', 'AI-assisted development', 'coding agents'],
 });
 
-export const buildGuideMetadata = (slug: string): Metadata => {
+const fetchGuideArticleMetadata = async (slug: string): Promise<ArticleMetadata | null> => {
+  try {
+    return await apiFetch<ArticleMetadata>(`/api/articles/${slug}/metadata`);
+  } catch {
+    return null;
+  }
+};
+
+const getFallbackGuideMetadata = (slug: string): Metadata => {
   const entry = guideSeoBySlug[slug];
 
   if (!entry) {
@@ -57,5 +67,24 @@ export const buildGuideMetadata = (slug: string): Metadata => {
     path: `/guides/${slug}`,
     type: 'article',
     keywords: entry.keywords,
+  });
+};
+
+export const buildGuideMetadata = async (slug: string): Promise<Metadata> => {
+  const article = await fetchGuideArticleMetadata(slug);
+
+  if (!article) {
+    return getFallbackGuideMetadata(slug);
+  }
+
+  const entry = guideSeoBySlug[slug];
+  const description = article.metaDescription?.trim() || article.excerpt;
+
+  return buildSeoMetadata({
+    title: article.title,
+    description,
+    path: `/guides/${article.slug}`,
+    type: 'article',
+    keywords: entry?.keywords,
   });
 };
