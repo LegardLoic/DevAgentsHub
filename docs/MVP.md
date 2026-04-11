@@ -198,6 +198,9 @@ repo/
 - `/dashboard/templates/[id]`
 - `/dashboard/bookmarks`
 
+## Search
+- `/search`
+
 ## Admin minimal
 - `/admin`
 - `/admin/analytics`
@@ -222,6 +225,10 @@ repo/
 - `POST /api/tools/debug-helper/run`
 - `GET /api/tools`
 - `GET /api/tools/:slug`
+
+## Search
+- `GET /api/search?q=...`
+- `GET /api/search?q=...&type=tools|guides|courses|discussions`
 
 ## Dashboard utilisateur
 - `GET /api/me/tool-runs`

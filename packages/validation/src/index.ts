@@ -151,6 +151,11 @@ export const adminLessonSchema = z.object({
   order: z.number().int().min(1, 'Order must be 1 or higher'),
 });
 
+export const searchQuerySchema = z.object({
+  q: z.string().trim().max(120, 'Search query must be shorter than 120 characters').default(''),
+  type: z.enum(['all', 'tools', 'guides', 'courses', 'discussions']).default('all'),
+});
+
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type PromptGeneratorInput = z.infer<typeof promptGeneratorSchema>;
@@ -165,3 +170,4 @@ export type LessonProgressInput = z.infer<typeof lessonProgressSchema>;
 export type AdminArticleInput = z.infer<typeof adminArticleSchema>;
 export type AdminCourseInput = z.infer<typeof adminCourseSchema>;
 export type AdminLessonInput = z.infer<typeof adminLessonSchema>;
+export type SearchQueryInput = z.infer<typeof searchQuerySchema>;

@@ -440,3 +440,31 @@ export interface AnalyticsOverview {
     recentDiscussions: AnalyticsActivityItem[];
   };
 }
+
+export type SearchFilter = 'all' | 'tools' | 'guides' | 'courses' | 'discussions';
+
+export type SearchResultType = 'tool' | 'guide' | 'course' | 'discussion';
+
+export interface SearchResultItem {
+  id: string;
+  type: SearchResultType;
+  title: string;
+  href: string;
+  description: string;
+  meta?: string;
+}
+
+export interface SearchResultGroup {
+  type: SearchResultType;
+  label: string;
+  count: number;
+  items: SearchResultItem[];
+}
+
+export interface SearchResponse {
+  query: string;
+  type: SearchFilter;
+  minimumQueryLength: number;
+  totalCount: number;
+  groups: SearchResultGroup[];
+}
