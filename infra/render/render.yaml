@@ -11,9 +11,9 @@ services:
     branch: main
     plan: starter
     autoDeployTrigger: checksPass
-    buildCommand: pnpm install --frozen-lockfile && pnpm --filter @devagentshub/api prisma:generate && pnpm --filter @devagentshub/api build
-    preDeployCommand: pnpm --filter @devagentshub/api prisma:migrate:deploy
-    startCommand: pnpm --filter @devagentshub/api start
+    buildCommand: corepack enable && corepack prepare pnpm@10.11.0 --activate && corepack pnpm install --frozen-lockfile && corepack pnpm --filter @devagentshub/api prisma:generate && corepack pnpm --filter @devagentshub/api build
+    preDeployCommand: corepack enable && corepack prepare pnpm@10.11.0 --activate && corepack pnpm --filter @devagentshub/api prisma:migrate:deploy
+    startCommand: corepack enable && corepack prepare pnpm@10.11.0 --activate && corepack pnpm --filter @devagentshub/api start
     healthCheckPath: /health
     buildFilter:
       paths:
@@ -42,8 +42,8 @@ services:
     branch: main
     plan: starter
     autoDeployTrigger: checksPass
-    buildCommand: pnpm install --frozen-lockfile && pnpm --filter @devagentshub/web build
-    startCommand: pnpm --filter @devagentshub/web start
+    buildCommand: corepack enable && corepack prepare pnpm@10.11.0 --activate && corepack pnpm install --frozen-lockfile && corepack pnpm --filter @devagentshub/web build
+    startCommand: corepack enable && corepack prepare pnpm@10.11.0 --activate && corepack pnpm --filter @devagentshub/web start
     buildFilter:
       paths:
         - apps/web/**
