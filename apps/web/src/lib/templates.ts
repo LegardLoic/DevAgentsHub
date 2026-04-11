@@ -11,14 +11,17 @@ import { excerpt } from '@devagentshub/utils';
 import { apiFetch, patchJson, postJson } from './api';
 import { buildSavedTemplateReuseHref } from './tool-runs';
 
-export const listTemplates = () =>
-  apiFetch<SavedTemplateSummary[]>('/api/me/templates');
+export const listTemplates = () => apiFetch<SavedTemplateSummary[]>('/api/me/templates');
 
-export const getTemplate = (id: string) =>
-  apiFetch<SavedTemplateDetail>(`/api/me/templates/${id}`);
+export const getTemplate = (id: string) => apiFetch<SavedTemplateDetail>(`/api/me/templates/${id}`);
 
 export const createTemplate = (payload: CreateTemplatePayload) =>
   postJson<SavedTemplateDetail, CreateTemplatePayload>('/api/me/templates', payload);
+
+export const duplicateTemplate = (id: string) =>
+  apiFetch<SavedTemplateDetail>(`/api/me/templates/${id}/duplicate`, {
+    method: 'POST',
+  });
 
 export const updateTemplate = (id: string, payload: UpdateTemplatePayload) =>
   patchJson<SavedTemplateDetail, UpdateTemplatePayload>(`/api/me/templates/${id}`, payload);
