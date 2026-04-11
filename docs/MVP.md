@@ -200,6 +200,7 @@ repo/
 
 ## Admin minimal
 - `/admin`
+- `/admin/analytics`
 - `/admin/articles`
 - `/admin/tools`
 - `/admin/courses`
@@ -250,6 +251,7 @@ repo/
 - `POST /api/discussions/:id/replies`
 
 ## Admin
+- `GET /api/admin/analytics/overview`
 - `POST /api/admin/articles`
 - `PATCH /api/admin/articles/:id`
 - `POST /api/admin/courses`
@@ -327,6 +329,15 @@ repo/
 - userId
 - articleId nullable
 - courseId nullable
+- createdAt
+
+## ProductEvent
+- id
+- eventType
+- userId nullable
+- entityType nullable
+- entityId nullable
+- metadata nullable
 - createdAt
 
 ## Discussion

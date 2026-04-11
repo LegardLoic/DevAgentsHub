@@ -1,4 +1,9 @@
-import type { CreateBookmarkInput, CreateTemplateInput, UpdateTemplateInput } from '@devagentshub/validation';
+import type { SavedTemplateDetail } from '@devagentshub/types';
+import type {
+  CreateBookmarkInput,
+  CreateTemplateInput,
+  UpdateTemplateInput,
+} from '@devagentshub/validation';
 import { parseTemplateInput } from '@devagentshub/validation';
 
 import { AppError } from '../utils/app-error';
@@ -7,6 +12,9 @@ import { bookmarkRepository, type BookmarkRepository } from '../repositories/boo
 import { courseRepository, type CourseRepository } from '../repositories/course.repository';
 import { templateRepository, type TemplateRepository } from '../repositories/template.repository';
 import { toolRepository, type ToolRepository } from '../repositories/tool.repository';
+import { analyticsService, type AnalyticsService } from './analytics.service';
+
+const TEMPLATE_NAME_MAX_LENGTH = 120;
 
 export class MeService {
   constructor(
@@ -15,6 +23,7 @@ export class MeService {
     private readonly bookmarks: BookmarkRepository = bookmarkRepository,
     private readonly articles: ArticleRepository = articleRepository,
     private readonly courses: CourseRepository = courseRepository,
+    private readonly analytics: AnalyticsService = analyticsService,
   ) {}
 
   async listToolRuns(userId: string) {
@@ -49,7 +58,11 @@ export class MeService {
     const tool = await this.tools.findRecordBySlug(input.toolSlug);
 
     if (!tool) {
-      throw new AppError('The selected tool is not supported for templates.', 400, 'INVALID_TOOL_SLUG');
+      throw new AppError(
+        'The selected tool is not supported for templates.',
+        400,
+        'INVALID_TOOL_SLUG',
+      );
     }
 
     return this.templates.createForUser(userId, input);
@@ -63,7 +76,9 @@ export class MeService {
     }
 
     const nextInput =
-      input.input !== undefined ? parseTemplateInput(existingTemplate.toolSlug, input.input) : undefined;
+      input.input !== undefined
+        ? parseTemplateInput(existingTemplate.toolSlug, input.input)
+        : undefined;
 
     const updatedTemplate = await this.templates.updateForUser(userId, id, {
       name: input.name,
@@ -77,6 +92,27 @@ export class MeService {
     return updatedTemplate;
   }
 
+  async duplicateTemplate(userId: string, id: string) {
+    const existingTemplate = await this.templates.findByIdForUser(userId, id);
+
+    if (!existingTemplate) {
+      throw new AppError('The requested template could not be found.', 404, 'TEMPLATE_NOT_FOUND');
+    }
+
+    const duplicatedTemplate = await this.templates.createForUser(
+      userId,
+      this.buildTemplateDuplicatePayload(existingTemplate),
+    );
+
+    await this.analytics.trackTemplateDuplicated({
+      templateId: duplicatedTemplate.id,
+      toolSlug: duplicatedTemplate.toolSlug,
+      userId,
+    });
+
+    return duplicatedTemplate;
+  }
+
   async listBookmarks(userId: string) {
     return this.bookmarks.listByUserId(userId);
   }
@@ -86,10 +122,18 @@ export class MeService {
       const article = await this.articles.findPublishedById(input.targetId);
 
       if (!article) {
-        throw new AppError('The article to bookmark could not be found.', 404, 'BOOKMARK_TARGET_NOT_FOUND');
+        throw new AppError(
+          'The article to bookmark could not be found.',
+          404,
+          'BOOKMARK_TARGET_NOT_FOUND',
+        );
       }
 
-      const existingBookmark = await this.bookmarks.findByTargetForUser(userId, 'article', input.targetId);
+      const existingBookmark = await this.bookmarks.findByTargetForUser(
+        userId,
+        'article',
+        input.targetId,
+      );
 
       if (existingBookmark) {
         throw new AppError('This article is already bookmarked.', 409, 'BOOKMARK_ALREADY_EXISTS');
@@ -101,10 +145,18 @@ export class MeService {
     const course = await this.courses.findPublishedById(input.targetId);
 
     if (!course) {
-      throw new AppError('The course to bookmark could not be found.', 404, 'BOOKMARK_TARGET_NOT_FOUND');
+      throw new AppError(
+        'The course to bookmark could not be found.',
+        404,
+        'BOOKMARK_TARGET_NOT_FOUND',
+      );
     }
 
-    const existingBookmark = await this.bookmarks.findByTargetForUser(userId, 'course', input.targetId);
+    const existingBookmark = await this.bookmarks.findByTargetForUser(
+      userId,
+      'course',
+      input.targetId,
+    );
 
     if (existingBookmark) {
       throw new AppError('This course is already bookmarked.', 409, 'BOOKMARK_ALREADY_EXISTS');
@@ -124,6 +176,39 @@ export class MeService {
       success: true,
     };
   }
+
+  private buildTemplateDuplicatePayload(template: SavedTemplateDetail): CreateTemplateInput {
+    const name = buildDuplicateTemplateName(template.name);
+
+    switch (template.toolSlug) {
+      case 'prompt-generator':
+        return {
+          name,
+          toolSlug: 'prompt-generator',
+          input: template.input,
+        };
+
+      case 'project-structure-generator':
+        return {
+          name,
+          toolSlug: 'project-structure-generator',
+          input: template.input,
+        };
+
+      case 'debug-helper':
+        return {
+          name,
+          toolSlug: 'debug-helper',
+          input: template.input,
+        };
+    }
+  }
 }
 
 export const meService = new MeService();
+
+const buildDuplicateTemplateName = (name: string): string => {
+  const suffix = ' copy';
+
+  return `${name.slice(0, TEMPLATE_NAME_MAX_LENGTH - suffix.length)}${suffix}`;
+};

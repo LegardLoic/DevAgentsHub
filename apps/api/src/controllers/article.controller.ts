@@ -13,7 +13,7 @@ export class ArticleController {
   });
 
   getBySlug = asyncHandler(async (req, res) => {
-    const article = await this.articles.getArticle(req.params.slug as string);
+    const article = await this.articles.getArticle(req.params.slug as string, req.authUser?.id);
 
     res.status(200).json({
       data: article,

@@ -41,7 +41,11 @@ export const TemplatesList = () => {
   if (userQuery.isLoading) {
     return (
       <Section>
-        <StatusPanel description="Checking your authenticated session." title="Loading templates" tone="loading" />
+        <StatusPanel
+          description="Checking your authenticated session."
+          title="Loading templates"
+          tone="loading"
+        />
       </Section>
     );
   }
@@ -50,7 +54,10 @@ export const TemplatesList = () => {
     return (
       <Section>
         <StatusPanel
-          description={getApiClientErrorMessage(userQuery.error, 'The templates area could not be loaded.')}
+          description={getApiClientErrorMessage(
+            userQuery.error,
+            'The templates area could not be loaded.',
+          )}
           title="Dashboard unavailable"
           tone="error"
         />
@@ -61,7 +68,10 @@ export const TemplatesList = () => {
   if (!userQuery.data) {
     return (
       <Section className="space-y-6">
-        <Link className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--color-accent)]" href="/dashboard">
+        <Link
+          className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--color-accent)]"
+          href="/dashboard"
+        >
           <ArrowLeft className="h-4 w-4" />
           Back to dashboard
         </Link>
@@ -76,13 +86,18 @@ export const TemplatesList = () => {
   if (templatesQuery.isLoading) {
     return (
       <Section>
-        <StatusPanel description="Fetching your saved templates." title="Loading templates" tone="loading" />
+        <StatusPanel
+          description="Fetching your saved templates."
+          title="Loading templates"
+          tone="loading"
+        />
       </Section>
     );
   }
 
   if (templatesQuery.isError) {
-    const isUnauthorized = templatesQuery.error instanceof ApiClientError && templatesQuery.error.statusCode === 401;
+    const isUnauthorized =
+      templatesQuery.error instanceof ApiClientError && templatesQuery.error.statusCode === 401;
 
     return (
       <Section>
@@ -93,7 +108,10 @@ export const TemplatesList = () => {
           />
         ) : (
           <StatusPanel
-            description={getApiClientErrorMessage(templatesQuery.error, 'Your saved templates could not be loaded.')}
+            description={getApiClientErrorMessage(
+              templatesQuery.error,
+              'Your saved templates could not be loaded.',
+            )}
             title="Templates unavailable"
             tone="error"
           />
@@ -104,12 +122,17 @@ export const TemplatesList = () => {
 
   const templates = templatesQuery.data ?? [];
   const filteredTemplates =
-    toolFilter === 'all' ? templates : templates.filter((template) => template.toolSlug === toolFilter);
+    toolFilter === 'all'
+      ? templates
+      : templates.filter((template) => template.toolSlug === toolFilter);
 
   if (!templates.length) {
     return (
       <Section className="space-y-6">
-        <Link className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--color-accent)]" href="/dashboard">
+        <Link
+          className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--color-accent)]"
+          href="/dashboard"
+        >
           <ArrowLeft className="h-4 w-4" />
           Back to dashboard
         </Link>
@@ -132,7 +155,10 @@ export const TemplatesList = () => {
 
   return (
     <Section className="space-y-6">
-      <Link className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--color-accent)]" href="/dashboard">
+      <Link
+        className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--color-accent)]"
+        href="/dashboard"
+      >
         <ArrowLeft className="h-4 w-4" />
         Back to dashboard
       </Link>
@@ -141,7 +167,8 @@ export const TemplatesList = () => {
         <Badge>Templates</Badge>
         <h1 className="headline text-5xl font-bold">Your reusable tool templates</h1>
         <p className="max-w-2xl text-lg leading-8 text-[var(--color-subtle)]">
-          Keep the tool inputs you want to reuse intentionally, without digging through your full run history.
+          Keep the tool inputs you want to reuse intentionally, without digging through your full
+          run history.
         </p>
       </div>
 
@@ -157,7 +184,11 @@ export const TemplatesList = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-3">
-          <Button onClick={() => setToolFilter('all')} size="sm" variant={toolFilter === 'all' ? 'default' : 'secondary'}>
+          <Button
+            onClick={() => setToolFilter('all')}
+            size="sm"
+            variant={toolFilter === 'all' ? 'default' : 'secondary'}
+          >
             All templates
           </Button>
           {toolCatalog.map((tool) => (
@@ -191,11 +222,11 @@ export const TemplatesList = () => {
                 <div className="text-sm text-[var(--color-subtle)]">{template.tool.name}</div>
                 <div className="flex flex-wrap gap-3">
                   <Button asChild size="sm" variant="secondary">
-                    <Link href={getToolPath(template.toolSlug)}>Open tool</Link>
+                    <Link href={getToolPath(template.toolSlug)}>Blank tool</Link>
                   </Button>
                   <Button asChild size="sm">
                     <Link href={`/dashboard/templates/${template.id}`}>
-                      View template
+                      Edit / run template
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>
                   </Button>

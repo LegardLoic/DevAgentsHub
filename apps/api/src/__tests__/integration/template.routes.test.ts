@@ -251,6 +251,81 @@ describe('template routes', () => {
     expect(prismaMock.template.update).toHaveBeenCalled();
   });
 
+  it('duplicates a template owned by the authenticated user', async () => {
+    const duplicatedTemplateRecord = {
+      ...promptTemplateRecord,
+      id: 'template_prompt_2',
+      name: 'React SaaS launch prompt copy',
+      createdAt: new Date('2026-03-09T09:00:00.000Z'),
+      updatedAt: new Date('2026-03-09T09:00:00.000Z'),
+    };
+
+    prismaMock.user.findUnique.mockResolvedValueOnce(authUserRecord);
+    prismaMock.template.findFirst.mockResolvedValueOnce(promptTemplateRecord);
+    prismaMock.template.create.mockResolvedValueOnce(duplicatedTemplateRecord);
+
+    const response = await request(createApp())
+      .post('/api/me/templates/template_prompt_1/duplicate')
+      .set('Cookie', authCookie);
+
+    expect(response.status).toBe(201);
+    expect(response.body.data).toMatchObject({
+      id: 'template_prompt_2',
+      name: 'React SaaS launch prompt copy',
+      toolSlug: 'prompt-generator',
+      input: {
+        projectType: 'React SaaS',
+      },
+    });
+    expect(prismaMock.template.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: {
+          userId: authUserRecord.id,
+          name: 'React SaaS launch prompt copy',
+          toolSlug: 'prompt-generator',
+          inputJson: promptTemplateRecord.inputJson,
+        },
+      }),
+    );
+  });
+
+  it('rejects unauthenticated template duplication', async () => {
+    const response = await request(createApp()).post(
+      '/api/me/templates/template_prompt_1/duplicate',
+    );
+
+    expect(response.status).toBe(401);
+    expect(response.body.error.code).toBe('UNAUTHORIZED');
+    expect(prismaMock.template.findFirst).not.toHaveBeenCalled();
+    expect(prismaMock.template.create).not.toHaveBeenCalled();
+  });
+
+  it('does not duplicate another user template', async () => {
+    prismaMock.user.findUnique.mockResolvedValueOnce(authUserRecord);
+    prismaMock.template.findFirst.mockResolvedValueOnce(null);
+
+    const response = await request(createApp())
+      .post('/api/me/templates/template_other_user/duplicate')
+      .set('Cookie', authCookie);
+
+    expect(response.status).toBe(404);
+    expect(response.body.error.code).toBe('TEMPLATE_NOT_FOUND');
+    expect(prismaMock.template.create).not.toHaveBeenCalled();
+  });
+
+  it('returns not found when duplicating a missing template', async () => {
+    prismaMock.user.findUnique.mockResolvedValueOnce(authUserRecord);
+    prismaMock.template.findFirst.mockResolvedValueOnce(null);
+
+    const response = await request(createApp())
+      .post('/api/me/templates/template_missing/duplicate')
+      .set('Cookie', authCookie);
+
+    expect(response.status).toBe(404);
+    expect(response.body.error.code).toBe('TEMPLATE_NOT_FOUND');
+    expect(prismaMock.template.create).not.toHaveBeenCalled();
+  });
+
   it('rejects invalid tool slugs on create', async () => {
     prismaMock.user.findUnique.mockResolvedValueOnce(authUserRecord);
 

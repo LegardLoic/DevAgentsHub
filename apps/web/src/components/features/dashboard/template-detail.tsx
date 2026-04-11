@@ -3,11 +3,13 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ArrowLeft, ArrowRight, Layers3, RefreshCw } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+import type { SavedTemplateDetail } from '@devagentshub/types';
 import {
   Badge,
   Button,
@@ -27,13 +29,20 @@ import { formatDate } from '@devagentshub/utils';
 import { ApiClientError, getApiClientErrorMessage } from '../../../lib/api';
 import { getToolContextualLinks } from '../../../lib/contextual-links';
 import { queryKeys } from '../../../lib/query-keys';
-import { getTemplate, getTemplatePrimaryCopyText, getTemplateReuseHref, updateTemplate } from '../../../lib/templates';
+import {
+  duplicateTemplate,
+  getTemplate,
+  getTemplatePrimaryCopyText,
+  getTemplateReuseHref,
+  updateTemplate,
+} from '../../../lib/templates';
 import { getToolPath } from '../../../lib/tool-runs';
 import { useCurrentUser } from '../../../hooks/use-auth';
 import { ContextualLinkCards } from '../../layout/contextual-link-cards';
 import { StatusPanel } from '../../layout/status-panel';
 import { CopyActionButton } from './copy-action-button';
 import { DashboardAuthRequired } from './dashboard-auth-required';
+import { TemplateInputEditor } from './template-input-editor';
 import { JsonBlock, ToolInputSummary } from './tool-input-summary';
 
 const renameTemplateSchema = z.object({
@@ -45,6 +54,7 @@ type RenameTemplateValues = z.infer<typeof renameTemplateSchema>;
 export const TemplateDetail = ({ id }: { id: string }) => {
   const userQuery = useCurrentUser();
   const queryClient = useQueryClient();
+  const router = useRouter();
   const form = useForm<RenameTemplateValues>({
     resolver: zodResolver(renameTemplateSchema),
     defaultValues: {
@@ -70,8 +80,12 @@ export const TemplateDetail = ({ id }: { id: string }) => {
     mutationFn: (values: RenameTemplateValues) => updateTemplate(id, { name: values.name }),
     onSuccess: async (template) => {
       await Promise.all([
-        queryClient.invalidateQueries({ queryKey: queryKeys.templates(userQuery.data?.id ?? 'anonymous') }),
-        queryClient.invalidateQueries({ queryKey: queryKeys.template(userQuery.data?.id ?? 'anonymous', id) }),
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.templates(userQuery.data?.id ?? 'anonymous'),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.template(userQuery.data?.id ?? 'anonymous', id),
+        }),
       ]);
       form.reset({
         name: template.name,
@@ -79,10 +93,38 @@ export const TemplateDetail = ({ id }: { id: string }) => {
     },
   });
 
+  const inputMutation = useMutation({
+    mutationFn: (input: SavedTemplateDetail['input']) => updateTemplate(id, { input }),
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.templates(userQuery.data?.id ?? 'anonymous'),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.template(userQuery.data?.id ?? 'anonymous', id),
+        }),
+      ]);
+    },
+  });
+
+  const duplicateMutation = useMutation({
+    mutationFn: () => duplicateTemplate(id),
+    onSuccess: async (template) => {
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.templates(userQuery.data?.id ?? 'anonymous'),
+      });
+      router.push(`/dashboard/templates/${template.id}`);
+    },
+  });
+
   if (userQuery.isLoading) {
     return (
       <Section>
-        <StatusPanel description="Checking your authenticated session." title="Loading template" tone="loading" />
+        <StatusPanel
+          description="Checking your authenticated session."
+          title="Loading template"
+          tone="loading"
+        />
       </Section>
     );
   }
@@ -91,7 +133,10 @@ export const TemplateDetail = ({ id }: { id: string }) => {
     return (
       <Section>
         <StatusPanel
-          description={getApiClientErrorMessage(userQuery.error, 'The template could not be loaded.')}
+          description={getApiClientErrorMessage(
+            userQuery.error,
+            'The template could not be loaded.',
+          )}
           title="Dashboard unavailable"
           tone="error"
         />
@@ -102,7 +147,10 @@ export const TemplateDetail = ({ id }: { id: string }) => {
   if (!userQuery.data) {
     return (
       <Section className="space-y-6">
-        <Link className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--color-accent)]" href="/dashboard/templates">
+        <Link
+          className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--color-accent)]"
+          href="/dashboard/templates"
+        >
           <ArrowLeft className="h-4 w-4" />
           Back to templates
         </Link>
@@ -117,18 +165,27 @@ export const TemplateDetail = ({ id }: { id: string }) => {
   if (templateQuery.isLoading) {
     return (
       <Section>
-        <StatusPanel description="Fetching the template from the API." title="Loading template" tone="loading" />
+        <StatusPanel
+          description="Fetching the template from the API."
+          title="Loading template"
+          tone="loading"
+        />
       </Section>
     );
   }
 
   if (templateQuery.isError || !templateQuery.data) {
-    const isMissingTemplate = templateQuery.error instanceof ApiClientError && templateQuery.error.statusCode === 404;
-    const isUnauthorized = templateQuery.error instanceof ApiClientError && templateQuery.error.statusCode === 401;
+    const isMissingTemplate =
+      templateQuery.error instanceof ApiClientError && templateQuery.error.statusCode === 404;
+    const isUnauthorized =
+      templateQuery.error instanceof ApiClientError && templateQuery.error.statusCode === 401;
 
     return (
       <Section className="space-y-6">
-        <Link className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--color-accent)]" href="/dashboard/templates">
+        <Link
+          className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--color-accent)]"
+          href="/dashboard/templates"
+        >
           <ArrowLeft className="h-4 w-4" />
           Back to templates
         </Link>
@@ -145,7 +202,10 @@ export const TemplateDetail = ({ id }: { id: string }) => {
           />
         ) : (
           <StatusPanel
-            description={getApiClientErrorMessage(templateQuery.error, 'The template could not be loaded.')}
+            description={getApiClientErrorMessage(
+              templateQuery.error,
+              'The template could not be loaded.',
+            )}
             title="Template unavailable"
             tone="error"
           />
@@ -159,7 +219,10 @@ export const TemplateDetail = ({ id }: { id: string }) => {
 
   return (
     <Section className="space-y-6">
-      <Link className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--color-accent)]" href="/dashboard/templates">
+      <Link
+        className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--color-accent)]"
+        href="/dashboard/templates"
+      >
         <ArrowLeft className="h-4 w-4" />
         Back to templates
       </Link>
@@ -179,10 +242,22 @@ export const TemplateDetail = ({ id }: { id: string }) => {
             </CardHeader>
           </Card>
 
+          <TemplateInputEditor
+            errorMessage={
+              inputMutation.error instanceof ApiClientError ? inputMutation.error.message : null
+            }
+            isSaving={inputMutation.isPending}
+            onSave={(input) => inputMutation.mutate(input)}
+            successMessage={inputMutation.isSuccess ? 'Stored input updated successfully.' : null}
+            template={template}
+          />
+
           <Card>
             <CardHeader>
-              <CardTitle>Reusable input</CardTitle>
-              <CardDescription>These are the values that will prefill the matching tool when you reuse this template.</CardDescription>
+              <CardTitle>Current input snapshot</CardTitle>
+              <CardDescription>
+                A readable reference for what will be sent to the tool when this template is reused.
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <ToolInputSummary source={template} />
@@ -195,23 +270,43 @@ export const TemplateDetail = ({ id }: { id: string }) => {
           <Card>
             <CardHeader>
               <Badge>Actions</Badge>
-              <CardTitle>Reuse or copy this template</CardTitle>
-              <CardDescription>Open the tool with this input prefilled or copy the stored payload directly.</CardDescription>
+              <CardTitle>Run from this template</CardTitle>
+              <CardDescription>
+                Open the matching tool with this input prefilled, review the fields, then run it
+                from the tool page.
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               <Button asChild className="w-full">
                 <Link href={reuseHref}>
-                  Reuse template
+                  Run from template
                   <RefreshCw className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
               <Button asChild className="w-full" variant="secondary">
                 <Link href={getToolPath(template.toolSlug)}>
-                  Open original tool
+                  Open blank tool
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
-              <CopyActionButton content={getTemplatePrimaryCopyText(template)} defaultLabel="Copy input JSON" />
+              <Button
+                className="w-full"
+                disabled={duplicateMutation.isPending}
+                onClick={() => duplicateMutation.mutate()}
+                type="button"
+                variant="secondary"
+              >
+                {duplicateMutation.isPending ? 'Duplicating...' : 'Duplicate template'}
+              </Button>
+              <CopyActionButton
+                content={getTemplatePrimaryCopyText(template)}
+                defaultLabel="Copy input JSON"
+              />
+              {duplicateMutation.error instanceof ApiClientError ? (
+                <p className="rounded-2xl bg-[rgba(234,88,12,0.1)] px-4 py-3 text-sm text-[var(--color-warm)]">
+                  {duplicateMutation.error.message}
+                </p>
+              ) : null}
             </CardContent>
           </Card>
 
@@ -219,15 +314,22 @@ export const TemplateDetail = ({ id }: { id: string }) => {
             <CardHeader>
               <Badge>Edit</Badge>
               <CardTitle>Rename this template</CardTitle>
-              <CardDescription>Keep the stored input intact, but make the label easier to find later.</CardDescription>
+              <CardDescription>
+                Keep the stored input intact, but make the label easier to find later.
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <form className="space-y-4" onSubmit={form.handleSubmit((values) => renameMutation.mutate(values))}>
+              <form
+                className="space-y-4"
+                onSubmit={form.handleSubmit((values) => renameMutation.mutate(values))}
+              >
                 <div className="space-y-2">
                   <Label htmlFor="rename-template">Template name</Label>
                   <Input id="rename-template" {...form.register('name')} />
                   {form.formState.errors.name ? (
-                    <p className="text-sm text-[var(--color-warm)]">{form.formState.errors.name.message}</p>
+                    <p className="text-sm text-[var(--color-warm)]">
+                      {form.formState.errors.name.message}
+                    </p>
                   ) : null}
                 </div>
                 {renameMutation.error instanceof ApiClientError ? (
@@ -244,7 +346,11 @@ export const TemplateDetail = ({ id }: { id: string }) => {
                   <Button disabled={renameMutation.isPending} type="submit">
                     {renameMutation.isPending ? 'Saving...' : 'Save name'}
                   </Button>
-                  <Button onClick={() => form.reset({ name: template.name })} type="button" variant="secondary">
+                  <Button
+                    onClick={() => form.reset({ name: template.name })}
+                    type="button"
+                    variant="secondary"
+                  >
                     Reset
                   </Button>
                 </div>

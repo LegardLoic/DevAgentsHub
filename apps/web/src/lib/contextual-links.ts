@@ -281,3 +281,29 @@ export const dashboardContextualLinks: ContextualLink[] = [
     actionLabel: 'Open formation',
   },
 ];
+
+export const communityContextualLinks: ContextualLink[] = [
+  {
+    href: '/guides',
+    eyebrow: 'Bring context',
+    title: 'Start from a guide',
+    description: 'Use the editorial guides to frame a practical question before opening a thread.',
+    actionLabel: 'Open guides',
+  },
+  {
+    href: '/tools',
+    eyebrow: 'Share output',
+    title: 'Run a tool first',
+    description:
+      'Generate a prompt, structure, or debug plan, then ask the community to challenge the result.',
+    actionLabel: 'Open tools',
+  },
+  {
+    href: '/formations/ai-agents-for-developers',
+    eyebrow: 'Keep learning',
+    title: 'Connect discussion to practice',
+    description:
+      'Use the learning path when a thread exposes a repeatable workflow habit worth reinforcing.',
+    actionLabel: 'Open formation',
+  },
+];
