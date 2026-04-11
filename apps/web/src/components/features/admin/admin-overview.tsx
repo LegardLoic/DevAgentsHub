@@ -1,9 +1,18 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowRight, BookOpenText, GraduationCap, ShieldCheck } from 'lucide-react';
+import { ArrowRight, BarChart3, BookOpenText, GraduationCap, ShieldCheck } from 'lucide-react';
 
-import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Section } from '@devagentshub/ui';
+import {
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Section,
+} from '@devagentshub/ui';
 
 import { AdminGate } from './admin-gate';
 
@@ -18,8 +27,8 @@ export const AdminOverview = () => (
             <Badge>Admin</Badge>
             <h1 className="headline text-5xl font-bold">Content operations for {displayName}</h1>
             <p className="max-w-2xl text-lg leading-8 text-[var(--color-subtle)]">
-              Keep the editorial and learning slices up to date without touching seed files manually. This admin area
-              stays intentionally minimal.
+              Keep the editorial and learning slices up to date without touching seed files
+              manually. This admin area stays intentionally minimal.
             </p>
           </div>
 
@@ -32,11 +41,14 @@ export const AdminOverview = () => (
                 </div>
                 <CardTitle>Manage guides and editorial content</CardTitle>
                 <CardDescription>
-                  Create new guides, update seeded content, and publish or unpublish articles cleanly.
+                  Create new guides, update seeded content, and publish or unpublish articles
+                  cleanly.
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex flex-wrap items-center justify-between gap-3">
-                <span className="text-sm text-[var(--color-subtle)]">Plain-text markdown editing</span>
+                <span className="text-sm text-[var(--color-subtle)]">
+                  Plain-text markdown editing
+                </span>
                 <Button asChild>
                   <Link href="/admin/articles">
                     Open articles
@@ -54,7 +66,8 @@ export const AdminOverview = () => (
                 </div>
                 <CardTitle>Manage courses and lesson flow</CardTitle>
                 <CardDescription>
-                  Update course structure, adjust lesson ordering, and keep the learning catalog publishable.
+                  Update course structure, adjust lesson ordering, and keep the learning catalog
+                  publishable.
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex flex-wrap items-center justify-between gap-3">
@@ -62,6 +75,29 @@ export const AdminOverview = () => (
                 <Button asChild>
                   <Link href="/admin/courses">
                     Open courses
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <BarChart3 className="h-5 w-5 text-[var(--color-accent)]" />
+                  <Badge>Analytics</Badge>
+                </div>
+                <CardTitle>Read lightweight product signals</CardTitle>
+                <CardDescription>
+                  Scan tool usage, content views, saved assets, bookmarks, and community activity
+                  from one internal view.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex flex-wrap items-center justify-between gap-3">
+                <span className="text-sm text-[var(--color-subtle)]">Internal usage overview</span>
+                <Button asChild>
+                  <Link href="/admin/analytics">
+                    Open analytics
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
@@ -77,8 +113,8 @@ export const AdminOverview = () => (
               </div>
               <CardTitle>Admin-only by design</CardTitle>
               <CardDescription>
-                This slice only exposes content management to authenticated administrator accounts. Public readers keep
-                using the published guides and formations pages.
+                This slice only exposes content management to authenticated administrator accounts.
+                Public readers keep using the published guides and formations pages.
               </CardDescription>
             </CardHeader>
           </Card>

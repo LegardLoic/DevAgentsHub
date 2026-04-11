@@ -1,9 +1,6 @@
 export type UserRole = 'ADMIN' | 'USER';
 
-export type ToolSlug =
-  | 'prompt-generator'
-  | 'project-structure-generator'
-  | 'debug-helper';
+export type ToolSlug = 'prompt-generator' | 'project-structure-generator' | 'debug-helper';
 
 export type ToolCategory = 'PROMPTING' | 'ARCHITECTURE' | 'DEBUGGING';
 
@@ -389,4 +386,57 @@ export interface CreateDiscussionPayload {
 
 export interface CreateDiscussionReplyPayload {
   content: string;
+}
+
+export interface AnalyticsTotalMetric {
+  key: string;
+  label: string;
+  value: number;
+  helper: string;
+}
+
+export interface AnalyticsRankedItem {
+  key: string;
+  label: string;
+  value: number;
+  description?: string;
+  href?: string;
+}
+
+export interface AnalyticsActivityItem {
+  id: string;
+  label: string;
+  description: string;
+  createdAt: string;
+  href?: string;
+}
+
+export interface AnalyticsOverview {
+  generatedAt: string;
+  totals: AnalyticsTotalMetric[];
+  tools: {
+    totalRuns: number;
+    runsByTool: AnalyticsRankedItem[];
+    recentRuns: AnalyticsActivityItem[];
+  };
+  templates: {
+    totalTemplates: number;
+    duplicatedTemplates: number;
+    recentTemplates: AnalyticsActivityItem[];
+  };
+  bookmarks: {
+    totalBookmarks: number;
+    split: AnalyticsRankedItem[];
+  };
+  content: {
+    articleViews: number;
+    courseViews: number;
+    topArticles: AnalyticsRankedItem[];
+    topCourses: AnalyticsRankedItem[];
+  };
+  community: {
+    totalDiscussions: number;
+    totalReplies: number;
+    recentDiscussions: AnalyticsActivityItem[];
+  };
 }

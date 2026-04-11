@@ -2,9 +2,13 @@ import type { LessonProgressInput } from '@devagentshub/validation';
 
 import { AppError } from '../utils/app-error';
 import { courseRepository, type CourseRepository } from '../repositories/course.repository';
+import { analyticsService, type AnalyticsService } from './analytics.service';
 
 export class CourseService {
-  constructor(private readonly courses: CourseRepository = courseRepository) {}
+  constructor(
+    private readonly courses: CourseRepository = courseRepository,
+    private readonly analytics: AnalyticsService = analyticsService,
+  ) {}
 
   async listCourses() {
     return this.courses.listPublished();
@@ -16,6 +20,8 @@ export class CourseService {
     if (!course) {
       throw new AppError('The requested course could not be found.', 404, 'COURSE_NOT_FOUND');
     }
+
+    await this.analytics.trackCourseView(course, userId);
 
     return course;
   }
@@ -42,4 +48,3 @@ export class CourseService {
 }
 
 export const courseService = new CourseService();
-

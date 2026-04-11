@@ -30,6 +30,7 @@ model User {
   lessonProgress   LessonProgress[]
   discussions      Discussion[]
   discussionReplies DiscussionReply[]
+  productEvents    ProductEvent[]
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
 }
@@ -183,4 +184,19 @@ model DiscussionReply {
   updatedAt    DateTime   @updatedAt
 
   @@index([discussionId, createdAt])
+}
+
+model ProductEvent {
+  id         String   @id @default(cuid())
+  eventType  String
+  userId     String?
+  entityType String?
+  entityId   String?
+  metadata   Json?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  createdAt  DateTime @default(now())
+
+  @@index([eventType, createdAt])
+  @@index([entityType, entityId, createdAt])
+  @@index([userId, createdAt])
 }

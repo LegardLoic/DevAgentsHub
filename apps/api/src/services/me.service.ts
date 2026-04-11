@@ -12,6 +12,7 @@ import { bookmarkRepository, type BookmarkRepository } from '../repositories/boo
 import { courseRepository, type CourseRepository } from '../repositories/course.repository';
 import { templateRepository, type TemplateRepository } from '../repositories/template.repository';
 import { toolRepository, type ToolRepository } from '../repositories/tool.repository';
+import { analyticsService, type AnalyticsService } from './analytics.service';
 
 const TEMPLATE_NAME_MAX_LENGTH = 120;
 
@@ -22,6 +23,7 @@ export class MeService {
     private readonly bookmarks: BookmarkRepository = bookmarkRepository,
     private readonly articles: ArticleRepository = articleRepository,
     private readonly courses: CourseRepository = courseRepository,
+    private readonly analytics: AnalyticsService = analyticsService,
   ) {}
 
   async listToolRuns(userId: string) {
@@ -97,10 +99,18 @@ export class MeService {
       throw new AppError('The requested template could not be found.', 404, 'TEMPLATE_NOT_FOUND');
     }
 
-    return this.templates.createForUser(
+    const duplicatedTemplate = await this.templates.createForUser(
       userId,
       this.buildTemplateDuplicatePayload(existingTemplate),
     );
+
+    await this.analytics.trackTemplateDuplicated({
+      templateId: duplicatedTemplate.id,
+      toolSlug: duplicatedTemplate.toolSlug,
+      userId,
+    });
+
+    return duplicatedTemplate;
   }
 
   async listBookmarks(userId: string) {
