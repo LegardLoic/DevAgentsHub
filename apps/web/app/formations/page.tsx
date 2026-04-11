@@ -1,6 +1,11 @@
+import type { Metadata } from 'next';
+
 import { Badge, Section } from '@devagentshub/ui';
 
 import { CoursesFeed } from '@/src/components/features/courses/courses-feed';
+import { formationsPageMetadata } from '@/src/lib/formations';
+
+export const metadata: Metadata = formationsPageMetadata;
 
 export default function FormationsPage() {
   return (

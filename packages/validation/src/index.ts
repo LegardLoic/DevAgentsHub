@@ -132,6 +132,11 @@ export const adminArticleSchema = z.object({
   title: z.string().trim().min(5, 'Title must be at least 5 characters').max(160),
   slug: contentSlugSchema,
   excerpt: z.string().trim().min(20, 'Excerpt must be at least 20 characters').max(400),
+  metaDescription: z
+    .string()
+    .trim()
+    .max(200, 'Meta description must be shorter than 200 characters')
+    .optional(),
   content: z.string().trim().min(40, 'Content must be at least 40 characters').max(40000),
   isPublished: z.boolean(),
 });

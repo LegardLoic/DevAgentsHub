@@ -13,6 +13,8 @@ const articles = [
   {
     slug: 'brief-coding-agents-clearly',
     title: 'How to Brief Coding Agents Clearly',
+    metaDescription:
+      'Learn how to brief coding agents with clear scope, constraints, and delivery expectations for production work.',
     content: `# Brief coding agents clearly
 
 Strong briefs reduce rework. Start with the product goal, the active constraints, and the expected delivery shape.
@@ -35,6 +37,8 @@ The tighter the brief, the more reliable the delivery and review process becomes
   {
     slug: 'structure-ai-dev-projects-cleanly',
     title: 'How to Structure AI-Assisted Projects Cleanly',
+    metaDescription:
+      'Structure AI-assisted development projects with clear boundaries, shared packages, and maintainable delivery rules.',
     content: `# Structure AI-assisted projects cleanly
 
 AI speed creates a temptation to collapse responsibilities. Resist it early.
@@ -51,6 +55,8 @@ Clean structure lets both humans and agents make safe changes without guessing w
   {
     slug: 'use-ai-agents-in-dev-workflow',
     title: 'How to Use AI Agents in a Practical Development Workflow',
+    metaDescription:
+      'Use AI agents in a practical developer workflow while preserving review, testing, and architectural judgment.',
     content: `# Use AI agents in a practical development workflow
 
 Treat agents like fast contributors, not final arbiters.

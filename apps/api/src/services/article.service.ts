@@ -23,6 +23,16 @@ export class ArticleService {
 
     return article;
   }
+
+  async getArticleMetadata(slug: string) {
+    const article = await this.articles.findPublishedMetadataBySlug(slug);
+
+    if (!article) {
+      throw new AppError('The requested article could not be found.', 404, 'ARTICLE_NOT_FOUND');
+    }
+
+    return article;
+  }
 }
 
 export const articleService = new ArticleService();

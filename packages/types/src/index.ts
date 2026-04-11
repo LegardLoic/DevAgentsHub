@@ -232,6 +232,7 @@ export interface ArticlePreview {
   slug: string;
   title: string;
   excerpt: string;
+  metaDescription: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -240,10 +241,19 @@ export interface ArticleDetail extends ArticlePreview {
   content: string;
 }
 
+export interface ArticleMetadata {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  metaDescription: string | null;
+}
+
 export interface AdminArticlePayload {
   title: string;
   slug: string;
   excerpt: string;
+  metaDescription?: string;
   content: string;
   isPublished: boolean;
 }
@@ -253,6 +263,7 @@ export interface AdminArticleSummary {
   slug: string;
   title: string;
   excerpt: string;
+  metaDescription: string | null;
   isPublished: boolean;
   createdAt: string;
   updatedAt: string;

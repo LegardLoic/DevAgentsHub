@@ -11,5 +11,5 @@ const slugParamsSchema = z.object({
 export const articleRoutes = Router();
 
 articleRoutes.get('/', articleController.list);
+articleRoutes.get('/:slug/metadata', validateParams(slugParamsSchema), articleController.getMetadataBySlug);
 articleRoutes.get('/:slug', validateParams(slugParamsSchema), articleController.getBySlug);
-

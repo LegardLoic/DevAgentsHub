@@ -32,6 +32,7 @@ describe('article routes', () => {
         slug: 'brief-coding-agents-clearly',
         title: 'How to Brief Coding Agents Clearly',
         excerpt: 'Strong briefs reduce rework when they stay specific and grounded in the current repo.',
+        metaDescription: 'SEO description for briefing coding agents clearly.',
         content: '# Brief coding agents clearly',
         ...baseDates,
       },
@@ -40,6 +41,7 @@ describe('article routes', () => {
         slug: 'structure-ai-dev-projects-cleanly',
         title: 'How to Structure AI-Assisted Projects Cleanly',
         excerpt: 'AI speed makes it tempting to collapse responsibilities too early.',
+        metaDescription: null,
         content: '# Structure AI-assisted projects cleanly',
         ...baseDates,
       },
@@ -67,6 +69,7 @@ describe('article routes', () => {
       slug: 'brief-coding-agents-clearly',
       title: 'How to Brief Coding Agents Clearly',
       excerpt: 'Strong briefs reduce rework when they stay specific and grounded in the current repo.',
+      metaDescription: 'SEO description for briefing coding agents clearly.',
       content: '# Brief coding agents clearly\n\nUse the architecture as part of the prompt.',
       ...baseDates,
     });
@@ -79,12 +82,45 @@ describe('article routes', () => {
       title: 'How to Brief Coding Agents Clearly',
     });
     expect(response.body.data.content).toContain('Use the architecture as part of the prompt.');
+    expect(response.body.data.metaDescription).toBe('SEO description for briefing coding agents clearly.');
     expect(prismaMock.article.findFirst).toHaveBeenCalledWith(
       expect.objectContaining({
         where: {
           slug: 'brief-coding-agents-clearly',
           isPublished: true,
         },
+      }),
+    );
+  });
+
+  it('returns article metadata without requiring the full content payload', async () => {
+    prismaMock.article.findFirst.mockResolvedValueOnce({
+      id: 'article_1',
+      slug: 'brief-coding-agents-clearly',
+      title: 'How to Brief Coding Agents Clearly',
+      excerpt: 'Strong briefs reduce rework when they stay specific and grounded in the current repo.',
+      metaDescription: 'Write better prompts for coding agents with clear scope and constraints.',
+    });
+
+    const response = await request(createApp()).get('/api/articles/brief-coding-agents-clearly/metadata');
+
+    expect(response.status).toBe(200);
+    expect(response.body.data).toEqual({
+      id: 'article_1',
+      slug: 'brief-coding-agents-clearly',
+      title: 'How to Brief Coding Agents Clearly',
+      excerpt: 'Strong briefs reduce rework when they stay specific and grounded in the current repo.',
+      metaDescription: 'Write better prompts for coding agents with clear scope and constraints.',
+    });
+    expect(prismaMock.article.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {
+          slug: 'brief-coding-agents-clearly',
+          isPublished: true,
+        },
+        select: expect.not.objectContaining({
+          content: true,
+        }),
       }),
     );
   });

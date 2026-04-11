@@ -24,6 +24,8 @@ import { MarkdownView } from '../../layout/markdown-view';
 import { StatusPanel } from '../../layout/status-panel';
 import { GuideNextSteps } from './guide-next-steps';
 
+const stripLeadingMarkdownTitle = (content: string) => content.replace(/^# .+(\r?\n){1,2}/, '');
+
 export const ArticleDetail = ({ slug }: { slug: string }) => {
   const articleQuery = useQuery({
     queryKey: queryKeys.article(slug),
@@ -76,6 +78,9 @@ export const ArticleDetail = ({ slug }: { slug: string }) => {
     );
   }
 
+  const article = articleQuery.data;
+  const articleBody = stripLeadingMarkdownTitle(article.content);
+
   return (
     <Section className="space-y-8">
       <Link className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--color-accent)]" href="/guides">
@@ -92,13 +97,13 @@ export const ArticleDetail = ({ slug }: { slug: string }) => {
                 Editorial guide
               </span>
             </div>
-            <CardTitle className="headline text-4xl md:text-5xl">{articleQuery.data.title}</CardTitle>
+            <h1 className="headline text-4xl font-bold text-[var(--color-ink)] md:text-5xl">{article.title}</h1>
             <CardDescription className="max-w-3xl text-base leading-7">
-              {articleQuery.data.excerpt}
+              {article.excerpt}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-8">
-            <MarkdownView content={articleQuery.data.content} />
+            <MarkdownView content={articleBody} />
           </CardContent>
         </Card>
 
@@ -119,19 +124,19 @@ export const ArticleDetail = ({ slug }: { slug: string }) => {
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-subtle)]">
                 Updated
               </p>
-              <p className="mt-2 text-[var(--color-ink)]">{formatDate(articleQuery.data.updatedAt)}</p>
+              <p className="mt-2 text-[var(--color-ink)]">{formatDate(article.updatedAt)}</p>
             </div>
             <BookmarkAction
-              loginNextPath={`/guides/${articleQuery.data.slug}`}
-              targetId={articleQuery.data.id}
-              targetTitle={articleQuery.data.title}
+              loginNextPath={`/guides/${article.slug}`}
+              targetId={article.id}
+              targetTitle={article.title}
               targetType="article"
             />
           </CardContent>
         </Card>
       </div>
 
-      <GuideNextSteps currentSlug={articleQuery.data.slug} />
+      <GuideNextSteps currentSlug={article.slug} />
     </Section>
   );
 };
