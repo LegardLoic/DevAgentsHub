@@ -96,6 +96,7 @@ describe('admin content routes', () => {
         slug: 'brief-coding-agents-clearly',
         title: 'How to Brief Coding Agents Clearly',
         excerpt: 'Strong briefs reduce rework when they stay specific and grounded in the current repo.',
+        metaDescription: 'SEO description for briefing coding agents clearly.',
         content: '# Brief coding agents clearly',
         isPublished: true,
         ...baseDates,
@@ -122,6 +123,7 @@ describe('admin content routes', () => {
       slug: 'writing-better-mvp-flows',
       title: 'Writing Better MVP Flows',
       excerpt: 'A pragmatic guide to keeping MVP flows coherent across product slices.',
+      metaDescription: 'Keep MVP product flows coherent across tools, content, learning, and community.',
       content: '# Writing Better MVP Flows',
       isPublished: false,
       ...baseDates,
@@ -134,6 +136,7 @@ describe('admin content routes', () => {
         title: 'Writing Better MVP Flows',
         slug: 'writing-better-mvp-flows',
         excerpt: 'A pragmatic guide to keeping MVP flows coherent across product slices.',
+        metaDescription: 'Keep MVP product flows coherent across tools, content, learning, and community.',
         content:
           '# Writing Better MVP Flows\n\nKeep the product slices cohesive and release them in bounded increments.',
         isPublished: false,
@@ -143,12 +146,14 @@ describe('admin content routes', () => {
     expect(response.body.data).toMatchObject({
       id: 'article_2',
       slug: 'writing-better-mvp-flows',
+      metaDescription: 'Keep MVP product flows coherent across tools, content, learning, and community.',
       isPublished: false,
     });
     expect(prismaMock.article.create).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
           slug: 'writing-better-mvp-flows',
+          metaDescription: 'Keep MVP product flows coherent across tools, content, learning, and community.',
         }),
       }),
     );
@@ -162,6 +167,7 @@ describe('admin content routes', () => {
         slug: 'brief-coding-agents-clearly',
         title: 'How to Brief Coding Agents Clearly',
         excerpt: 'Strong briefs reduce rework when they stay specific and grounded in the current repo.',
+        metaDescription: 'SEO description for briefing coding agents clearly.',
         content: '# Brief coding agents clearly',
         isPublished: true,
         ...baseDates,
@@ -171,6 +177,7 @@ describe('admin content routes', () => {
         slug: 'brief-coding-agents-clearly',
         title: 'How to Brief Coding Agents Clearly',
         excerpt: 'Strong briefs reduce rework when they stay specific and grounded in the current repo.',
+        metaDescription: 'SEO description for briefing coding agents clearly.',
         content: '# Brief coding agents clearly',
         isPublished: true,
         ...baseDates,
@@ -180,6 +187,7 @@ describe('admin content routes', () => {
       slug: 'brief-coding-agents-clearly',
       title: 'How to Brief Coding Agents Clearly',
       excerpt: 'Updated editorial positioning for the guide.',
+      metaDescription: null,
       content: '# Brief coding agents clearly',
       isPublished: false,
       ...baseDates,
@@ -192,6 +200,7 @@ describe('admin content routes', () => {
         title: 'How to Brief Coding Agents Clearly',
         slug: 'brief-coding-agents-clearly',
         excerpt: 'Updated editorial positioning for the guide.',
+        metaDescription: '',
         content:
           '# Brief coding agents clearly\n\nMake the current architecture part of the prompt and review loop.',
         isPublished: false,
@@ -200,6 +209,7 @@ describe('admin content routes', () => {
     expect(response.status).toBe(200);
     expect(response.body.data).toMatchObject({
       id: 'article_1',
+      metaDescription: null,
       isPublished: false,
     });
   });
