@@ -6,7 +6,9 @@ import { ArrowRight, Bookmark, History, Layers3, LayoutDashboard, MessagesSquare
 import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Section } from '@devagentshub/ui';
 
 import { useCurrentUser } from '../../../hooks/use-auth';
+import { dashboardContextualLinks } from '../../../lib/contextual-links';
 import { DashboardAuthRequired } from './dashboard-auth-required';
+import { ContextualLinkCards } from '../../layout/contextual-link-cards';
 import { StatusPanel } from '../../layout/status-panel';
 import { getApiClientErrorMessage } from '../../../lib/api';
 
@@ -174,6 +176,13 @@ export const DashboardOverview = () => {
           </Card>
         </div>
       </div>
+
+      <ContextualLinkCards
+        description="Use the dashboard as a launchpad: revisit saved work, then move back into reading, execution, or learning."
+        eyebrow="Connected workspace"
+        links={dashboardContextualLinks}
+        title="Pick the next product loop"
+      />
     </Section>
   );
 };

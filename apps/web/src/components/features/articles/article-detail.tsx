@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, Compass } from 'lucide-react';
+import { ArrowLeft, Compass } from 'lucide-react';
 
 import type { ArticleDetail as ArticleDetailType } from '@devagentshub/types';
 import {
@@ -99,32 +99,6 @@ export const ArticleDetail = ({ slug }: { slug: string }) => {
           </CardHeader>
           <CardContent className="space-y-8">
             <MarkdownView content={articleQuery.data.content} />
-            <div className="rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)]/80 p-6">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-subtle)]">
-                Next practical move
-              </p>
-              <h2 className="mt-3 text-2xl font-semibold text-[var(--color-ink)]">
-                Turn the article into concrete work
-              </h2>
-              <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--color-subtle)]">
-                Once the editorial context is clear, use the rest of DevAgentsHub to apply it in a tool flow, reinforce
-                it in the learning path, or challenge it in the community board.
-              </p>
-              <div className="mt-5 flex flex-wrap gap-3">
-                <Button asChild>
-                  <Link href="/tools">
-                    Open tools
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
-                </Button>
-                <Button asChild variant="secondary">
-                  <Link href="/formations">Continue with formations</Link>
-                </Button>
-                <Button asChild variant="secondary">
-                  <Link href="/community">Open community</Link>
-                </Button>
-              </div>
-            </div>
           </CardContent>
         </Card>
 
@@ -157,7 +131,7 @@ export const ArticleDetail = ({ slug }: { slug: string }) => {
         </Card>
       </div>
 
-      <GuideNextSteps />
+      <GuideNextSteps currentSlug={articleQuery.data.slug} />
     </Section>
   );
 };
