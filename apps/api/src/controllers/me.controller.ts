@@ -70,9 +70,25 @@ export class MeController {
       throw new AppError('Authentication is required for this action.', 401, 'UNAUTHORIZED');
     }
 
-    const template = await this.me.updateTemplate(req.authUser.id, req.params.id as string, req.body);
+    const template = await this.me.updateTemplate(
+      req.authUser.id,
+      req.params.id as string,
+      req.body,
+    );
 
     res.status(200).json({
+      data: template,
+    });
+  });
+
+  duplicateTemplate = asyncHandler(async (req, res) => {
+    if (!req.authUser) {
+      throw new AppError('Authentication is required for this action.', 401, 'UNAUTHORIZED');
+    }
+
+    const template = await this.me.duplicateTemplate(req.authUser.id, req.params.id as string);
+
+    res.status(201).json({
       data: template,
     });
   });
