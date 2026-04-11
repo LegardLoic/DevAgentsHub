@@ -1,12 +1,9 @@
 import { Router } from 'express';
 import { z } from 'zod';
 
-import {
-  adminArticleSchema,
-  adminCourseSchema,
-  adminLessonSchema,
-} from '@devagentshub/validation';
+import { adminArticleSchema, adminCourseSchema, adminLessonSchema } from '@devagentshub/validation';
 
+import { adminAnalyticsController } from '../controllers/admin-analytics.controller';
 import { adminContentController } from '../controllers/admin-content.controller';
 import { requireAdmin } from '../middlewares/auth';
 import { validateBody, validateParams } from '../middlewares/validate';
@@ -19,9 +16,15 @@ export const adminRoutes = Router();
 
 adminRoutes.use(requireAdmin);
 
+adminRoutes.get('/analytics/overview', adminAnalyticsController.overview);
+
 adminRoutes.get('/articles', adminContentController.listArticles);
 adminRoutes.get('/articles/:id', validateParams(idParamsSchema), adminContentController.getArticle);
-adminRoutes.post('/articles', validateBody(adminArticleSchema), adminContentController.createArticle);
+adminRoutes.post(
+  '/articles',
+  validateBody(adminArticleSchema),
+  adminContentController.createArticle,
+);
 adminRoutes.patch(
   '/articles/:id',
   validateParams(idParamsSchema),

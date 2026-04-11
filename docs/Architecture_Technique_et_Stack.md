@@ -75,7 +75,7 @@ repo/
 - GitHub Actions (CI)
 - Turborepo (monorepo)
 - Cloudinary (uploads)
-- Plausible (analytics)
+- Analytics produit interne minimal
 
 ## Extensions futures
 
