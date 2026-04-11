@@ -7,13 +7,6 @@ interface GuideSeoEntry {
   description: string;
 }
 
-interface GuideNextStep {
-  href: string;
-  eyebrow: string;
-  title: string;
-  description: string;
-}
-
 const guideSeoBySlug: Record<string, GuideSeoEntry> = {
   'brief-coding-agents-clearly': {
     title: 'How to Brief Coding Agents Clearly',
@@ -58,27 +51,3 @@ export const buildGuideMetadata = (slug: string): Metadata => {
     },
   };
 };
-
-export const guideNextSteps: GuideNextStep[] = [
-  {
-    href: '/tools',
-    eyebrow: 'Apply it',
-    title: 'Move from guidance to execution',
-    description:
-      'Use the prompt generator, project structure generator, and debug helper to turn the article into concrete work.',
-  },
-  {
-    href: '/formations',
-    eyebrow: 'Learn deeper',
-    title: 'Continue with the learning path',
-    description:
-      'Open the formations section to reinforce the same delivery practices through the current lesson sequence.',
-  },
-  {
-    href: '/community',
-    eyebrow: 'Discuss it',
-    title: 'Bring the topic to the community board',
-    description:
-      'Turn the article into a discussion thread, compare workflows, and pressure-test the guidance with other developers.',
-  },
-];
