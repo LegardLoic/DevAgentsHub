@@ -19,10 +19,12 @@ import {
 import { formatDate } from '@devagentshub/utils';
 
 import { ApiClientError, apiFetch, getApiClientErrorMessage } from '../../../lib/api';
+import { getToolContextualLinks } from '../../../lib/contextual-links';
 import { queryKeys } from '../../../lib/query-keys';
 import { useCurrentUser } from '../../../hooks/use-auth';
 import { buildSavedRunReuseHref, getSavedRunPrimaryCopyText, getToolPath } from '../../../lib/tool-runs';
 import { getSuggestedTemplateName } from '../../../lib/templates';
+import { ContextualLinkCards } from '../../layout/contextual-link-cards';
 import { StatusPanel } from '../../layout/status-panel';
 import { DashboardAuthRequired } from './dashboard-auth-required';
 import { CopyActionButton } from './copy-action-button';
@@ -253,6 +255,14 @@ export const SavedRunDetail = ({ id }: { id: string }) => {
             suggestedName={getSuggestedTemplateName(run.toolSlug, run.input)}
             toolSlug={run.toolSlug}
             userId={userQuery.data.id}
+          />
+
+          <ContextualLinkCards
+            description="Use this saved result as part of a wider workflow instead of leaving it as isolated history."
+            eyebrow="Related next moves"
+            layout="stack"
+            links={getToolContextualLinks(run.toolSlug)}
+            title="Connect this run"
           />
 
           <Card>

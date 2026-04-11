@@ -25,10 +25,12 @@ import { templateNameSchema } from '@devagentshub/validation';
 import { formatDate } from '@devagentshub/utils';
 
 import { ApiClientError, getApiClientErrorMessage } from '../../../lib/api';
+import { getToolContextualLinks } from '../../../lib/contextual-links';
 import { queryKeys } from '../../../lib/query-keys';
 import { getTemplate, getTemplatePrimaryCopyText, getTemplateReuseHref, updateTemplate } from '../../../lib/templates';
 import { getToolPath } from '../../../lib/tool-runs';
 import { useCurrentUser } from '../../../hooks/use-auth';
+import { ContextualLinkCards } from '../../layout/contextual-link-cards';
 import { StatusPanel } from '../../layout/status-panel';
 import { CopyActionButton } from './copy-action-button';
 import { DashboardAuthRequired } from './dashboard-auth-required';
@@ -249,6 +251,14 @@ export const TemplateDetail = ({ id }: { id: string }) => {
               </form>
             </CardContent>
           </Card>
+
+          <ContextualLinkCards
+            description="Templates are reusable inputs. These links connect the saved setup to the guide, course, or discussion that makes it stronger."
+            eyebrow="Related next moves"
+            layout="stack"
+            links={getToolContextualLinks(template.toolSlug)}
+            title="Use this template in context"
+          />
 
           <Card>
             <CardHeader>

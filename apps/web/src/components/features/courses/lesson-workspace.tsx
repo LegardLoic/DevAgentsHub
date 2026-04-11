@@ -8,8 +8,10 @@ import type { LessonDetail, LessonProgressResponse } from '@devagentshub/types';
 import { Button, Section } from '@devagentshub/ui';
 
 import { ApiClientError, apiFetch, getApiClientErrorMessage, postJson } from '../../../lib/api';
+import { getLessonContextualLinks } from '../../../lib/contextual-links';
 import { queryKeys } from '../../../lib/query-keys';
 import { useCurrentUser } from '../../../hooks/use-auth';
+import { ContextualLinkCards } from '../../layout/contextual-link-cards';
 import { StatusPanel } from '../../layout/status-panel';
 import { LessonDetailCard } from './lesson-detail-card';
 
@@ -56,11 +58,13 @@ export const LessonWorkspace = ({ slug }: { slug: string }) => {
     );
   }
 
+  const lesson = lessonQuery.data;
+
   return (
     <Section className="space-y-6">
       <div className="flex flex-wrap gap-3">
         <Button asChild variant="ghost">
-          <Link href={`/formations/${lessonQuery.data.course.slug}`}>
+          <Link href={`/formations/${lesson.course.slug}`}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to course
           </Link>
@@ -73,12 +77,12 @@ export const LessonWorkspace = ({ slug }: { slug: string }) => {
       <LessonDetailCard
         errorMessage={progressMutation.error instanceof ApiClientError ? progressMutation.error.message : null}
         isSaving={progressMutation.isPending}
-        lesson={lessonQuery.data}
+        lesson={lesson}
         onToggleProgress={() =>
           progressMutation.mutate({
-            lessonId: lessonQuery.data.id,
-            completed: !lessonQuery.data.progress?.completed,
-            courseSlug: lessonQuery.data.course.slug,
+            lessonId: lesson.id,
+            completed: !lesson.progress?.completed,
+            courseSlug: lesson.course.slug,
           })
         }
         successMessage={
@@ -89,6 +93,13 @@ export const LessonWorkspace = ({ slug }: { slug: string }) => {
             : null
         }
         user={user}
+      />
+
+      <ContextualLinkCards
+        description="Use the lesson as the focused reading surface, then jump into the matching guide, tool, or discussion path."
+        eyebrow="Lesson context"
+        links={getLessonContextualLinks(lesson.course.slug)}
+        title="Keep learning connected to execution"
       />
     </Section>
   );

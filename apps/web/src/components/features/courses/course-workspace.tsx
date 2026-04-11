@@ -19,8 +19,10 @@ import {
 } from '@devagentshub/ui';
 
 import { ApiClientError, apiFetch, getApiClientErrorMessage, postJson } from '../../../lib/api';
+import { getCourseContextualLinks } from '../../../lib/contextual-links';
 import { queryKeys } from '../../../lib/query-keys';
 import { useCurrentUser } from '../../../hooks/use-auth';
+import { ContextualLinkCards } from '../../layout/contextual-link-cards';
 import { StatusPanel } from '../../layout/status-panel';
 import { BookmarkAction } from '../bookmarks/bookmark-action';
 import { LessonDetailCard } from './lesson-detail-card';
@@ -98,6 +100,8 @@ export const CourseWorkspace = ({ slug }: { slug: string }) => {
     );
   }
 
+  const course = courseQuery.data;
+
   return (
     <Section className="space-y-6">
       <Link className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--color-accent)]" href="/formations">
@@ -108,18 +112,18 @@ export const CourseWorkspace = ({ slug }: { slug: string }) => {
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <Badge>{courseQuery.data.lessonsCount} lessons</Badge>
-              <CardTitle>{courseQuery.data.title}</CardTitle>
-              <CardDescription>{courseQuery.data.description}</CardDescription>
+              <Badge>{course.lessonsCount} lessons</Badge>
+              <CardTitle>{course.title}</CardTitle>
+              <CardDescription>{course.description}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <BookmarkAction
-                loginNextPath={`/formations/${courseQuery.data.slug}`}
-                targetId={courseQuery.data.id}
-                targetTitle={courseQuery.data.title}
+                loginNextPath={`/formations/${course.slug}`}
+                targetId={course.id}
+                targetTitle={course.title}
                 targetType="course"
               />
-              {courseQuery.data.lessons.map((lesson) => (
+              {course.lessons.map((lesson) => (
                 <div
                   key={lesson.id}
                   className={`rounded-3xl border px-4 py-4 transition ${
@@ -206,6 +210,13 @@ export const CourseWorkspace = ({ slug }: { slug: string }) => {
           />
         )}
       </div>
+
+      <ContextualLinkCards
+        description="Keep the learning path connected to the rest of DevAgentsHub without distracting from the active lesson."
+        eyebrow="Course context"
+        links={getCourseContextualLinks(course.slug)}
+        title="Reinforce this course with the right next action"
+      />
     </Section>
   );
 };
